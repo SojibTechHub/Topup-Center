@@ -1,7 +1,5 @@
-@import "tailwindcss";
-
-/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
 
 /* ─── Design Tokens ───────────────────────────────────────────────────────── */
 :root {
@@ -305,14 +303,14 @@ a:hover { color: var(--accent-lime); }
 .badge-gray { background: var(--bg-elevated); color: var(--text-secondary); }
 
 /* ─── Status badges ───────────────────────────────────────────────────────── */
-.status-PENDING_PAYMENT { @apply badge badge-gold; }
-.status-PAID { @apply badge badge-cyan; }
-.status-PROCESSING { @apply badge badge-purple; }
-.status-COMPLETED { @apply badge badge-lime; }
-.status-FAILED { @apply badge badge-red; }
-.status-CANCELLED { @apply badge badge-gray; }
-.status-EXPIRED { @apply badge badge-gray; }
-.status-REFUNDED { @apply badge badge-magenta; }
+.status-PENDING_PAYMENT { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); }
+.status-PAID { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+.status-PROCESSING { background: rgba(167, 139, 250, 0.15); color: var(--accent-purple); }
+.status-COMPLETED { background: var(--accent-lime-dim); color: var(--accent-lime); }
+.status-FAILED { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+.status-CANCELLED { background: var(--bg-elevated); color: var(--text-secondary); }
+.status-EXPIRED { background: var(--bg-elevated); color: var(--text-secondary); }
+.status-REFUNDED { background: var(--accent-magenta-dim); color: var(--accent-magenta); }
 
 /* ─── Neon Glow Effects ───────────────────────────────────────────────────── */
 .glow-cyan { box-shadow: var(--shadow-cyan); }

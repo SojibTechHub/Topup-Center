@@ -13,7 +13,6 @@ const loginSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
   adapter: PrismaAdapter(db),
   providers: [
     Credentials({
@@ -152,7 +151,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
   },
-  trustHost: env.AUTH_TRUST_HOST,
+  trustHost: env.AUTH_TRUST_HOST || true,
   secret: env.AUTH_SECRET,
 });
 

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Zap, FileText, CheckCircle2, AlertCircle, ArrowRight, Wallet, ShieldCheck } from "lucide-react";
 
 interface WalletTopupCardProps {
   currentBalanceBdt: string;
@@ -127,7 +129,7 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
   };
 
   return (
-    <div className="glass-card" style={{ padding: "28px" }}>
+    <div className="glass-card" style={{ padding: "30px", borderRadius: "20px" }}>
       {/* Wallet Balance Hero */}
       <div
         style={{
@@ -135,21 +137,21 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: "16px",
-          paddingBottom: "24px",
+          gap: "18px",
+          paddingBottom: "26px",
           borderBottom: "1px solid var(--border-color)",
-          marginBottom: "24px",
+          marginBottom: "28px",
         }}
       >
         <div>
-          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "block" }}>
-            বর্তমান ওয়ালেট ব্যালেন্স
+          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px" }}>
+            <Wallet size={16} className="text-cyan-400" /> বর্তমান ওয়ালেট ব্যালেন্স
           </span>
-          <div style={{ fontSize: "2.4rem", fontWeight: 900, color: "var(--accent-lime)" }}>
+          <div style={{ fontSize: "2.6rem", fontWeight: 900, color: "var(--accent-lime)", letterSpacing: "-0.5px" }}>
             ৳ {currentBalanceBdt}
           </div>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-            ⚡ কোনো পিন বা ওটিপি ছাড়াই ১-ক্লিকে গেম টপআপ করুন
+          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
+            <Zap size={14} className="text-yellow-400" /> কোনো পিন বা ওটিপি ছাড়াই ১-ক্লিকে গেম টপআপ করুন
           </span>
         </div>
 
@@ -157,54 +159,96 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
         <div
           style={{
             display: "flex",
-            background: "rgba(0, 0, 0, 0.4)",
-            padding: "4px",
-            borderRadius: "10px",
+            background: "rgba(0, 0, 0, 0.5)",
+            padding: "5px",
+            borderRadius: "12px",
             border: "1px solid var(--border-color)",
+            gap: "4px",
           }}
         >
           <button
             type="button"
             onClick={() => setActiveTab("instant")}
             style={{
-              padding: "8px 18px",
-              borderRadius: "8px",
+              padding: "10px 20px",
+              borderRadius: "9px",
               border: "none",
               cursor: "pointer",
-              fontSize: "0.85rem",
-              fontWeight: activeTab === "instant" ? 700 : 400,
-              background: activeTab === "instant" ? "var(--accent-cyan)" : "transparent",
+              fontSize: "0.88rem",
+              fontWeight: activeTab === "instant" ? 700 : 500,
+              background: activeTab === "instant" ? "linear-gradient(135deg, var(--accent-cyan), #0284C7)" : "transparent",
               color: activeTab === "instant" ? "#070A12" : "var(--text-secondary)",
-              transition: "all 0.15s ease",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "all 0.2s ease",
             }}
           >
-            ⚡ ইনস্ট্যান্ট পেমেন্ট
+            <Zap size={16} />
+            <span>ইনস্ট্যান্ট গেটওয়ে</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("manual")}
             style={{
-              padding: "8px 18px",
-              borderRadius: "8px",
+              padding: "10px 20px",
+              borderRadius: "9px",
               border: "none",
               cursor: "pointer",
-              fontSize: "0.85rem",
-              fontWeight: activeTab === "manual" ? 700 : 400,
-              background: activeTab === "manual" ? "var(--accent-lime)" : "transparent",
+              fontSize: "0.88rem",
+              fontWeight: activeTab === "manual" ? 700 : 500,
+              background: activeTab === "manual" ? "linear-gradient(135deg, var(--accent-lime), #65A30D)" : "transparent",
               color: activeTab === "manual" ? "#070A12" : "var(--text-secondary)",
-              transition: "all 0.15s ease",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "all 0.2s ease",
             }}
           >
-            📝 ম্যানুয়াল TrxID
+            <FileText size={16} />
+            <span>ম্যানুয়াল TrxID</span>
           </button>
         </div>
       </div>
 
-      {/* Tab 1: Instant Topup via UddoktaPay */}
+      {/* Tab 1: Instant Topup via UddoktaPay with Real Logos */}
       {activeTab === "instant" ? (
         <div>
+          {/* Real Supported Payment Logos Strip */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+              background: "rgba(0, 0, 0, 0.25)",
+              padding: "14px 18px",
+              borderRadius: "14px",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              marginBottom: "24px",
+            }}
+          >
+            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: 600 }}>
+              অনুমোদিত পেমেন্ট পার্টনার:
+            </span>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <div style={{ height: "28px", width: "75px", position: "relative" }}>
+                <Image src="/payments/bkash.svg" alt="bKash" fill style={{ objectFit: "contain" }} />
+              </div>
+              <div style={{ height: "28px", width: "75px", position: "relative" }}>
+                <Image src="/payments/nagad.svg" alt="Nagad" fill style={{ objectFit: "contain" }} />
+              </div>
+              <div style={{ height: "28px", width: "75px", position: "relative" }}>
+                <Image src="/payments/rocket.svg" alt="Rocket" fill style={{ objectFit: "contain" }} />
+              </div>
+              <div style={{ height: "28px", width: "70px", position: "relative" }}>
+                <Image src="/payments/card.svg" alt="Cards" fill style={{ objectFit: "contain" }} />
+              </div>
+            </div>
+          </div>
+
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "14px" }}>
-            টাকার পরিমাণ নির্বাচন করুন
+            রিচার্জের পরিমাণ নির্বাচন করুন
           </h3>
 
           {/* Quick Amount Buttons */}
@@ -214,15 +258,17 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                 key={amt}
                 type="button"
                 onClick={() => setInstantAmount(amt)}
-                className={`badge ${instantAmount === amt ? "badge-cyan" : ""}`}
                 style={{
-                  padding: "8px 16px",
+                  padding: "10px 18px",
                   fontSize: "0.95rem",
+                  fontWeight: 700,
                   cursor: "pointer",
                   border: instantAmount === amt ? "2px solid var(--accent-cyan)" : "1px solid var(--border-color)",
                   background: instantAmount === amt ? "rgba(34, 211, 238, 0.15)" : "rgba(255, 255, 255, 0.03)",
                   color: instantAmount === amt ? "var(--accent-cyan)" : "var(--text-primary)",
-                  borderRadius: "8px",
+                  borderRadius: "10px",
+                  transition: "all 0.15s ease",
+                  boxShadow: instantAmount === amt ? "0 0 15px rgba(34, 211, 238, 0.25)" : "none",
                 }}
               >
                 ৳ {amt}
@@ -230,12 +276,12 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
             ))}
           </div>
 
-          <div style={{ maxWidth: "340px", marginBottom: "20px" }}>
+          <div style={{ maxWidth: "360px", marginBottom: "22px" }}>
             <label style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "block", marginBottom: "6px" }}>
               অথবা নিজের পছন্দমতো পরিমাণ লিখুন (৳১০০ - ৳১০,০০০):
             </label>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-muted)" }}>৳</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--accent-cyan)" }}>৳</span>
               <input
                 type="number"
                 min="100"
@@ -243,14 +289,15 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                 value={instantAmount}
                 onChange={(e) => setInstantAmount(Number(e.target.value))}
                 className="input"
-                style={{ flex: 1, fontSize: "1.1rem", fontWeight: 700 }}
+                style={{ flex: 1, fontSize: "1.15rem", fontWeight: 800, padding: "10px 16px" }}
               />
             </div>
           </div>
 
           {instantError && (
-            <div style={{ color: "#EF4444", fontSize: "0.85rem", marginBottom: "16px" }}>
-              ⚠️ {instantError}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#EF4444", fontSize: "0.85rem", marginBottom: "18px" }}>
+              <AlertCircle size={16} />
+              <span>{instantError}</span>
             </div>
           )}
 
@@ -260,40 +307,54 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
               onClick={handleInstantTopup}
               disabled={isInstantLoading}
               className="btn btn-cyan"
-              style={{ padding: "12px 30px", fontSize: "1rem", fontWeight: 700 }}
+              style={{
+                padding: "14px 34px",
+                fontSize: "1rem",
+                fontWeight: 800,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
             >
-              {isInstantLoading ? "গেgateway লোড হচ্ছে..." : `৳ ${instantAmount} রিচার্জ করুন ➔`}
+              {isInstantLoading ? (
+                "পেমেন্ট গেটওয়ে লোড হচ্ছে..."
+              ) : (
+                <>
+                  <span>৳ {instantAmount} রিচার্জ করুন</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              🔒 বিকাশ, নগদ, রকেটে নিরাপদ অটোমেটেড রিচার্জ
+            <span style={{ fontSize: "0.82rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <ShieldCheck size={16} className="text-lime-400" /> সম্পূর্ণ স্বয়ংক্রিয় ও তাত্ক্ষণিক ব্যালেন্স জমা
             </span>
           </div>
         </div>
       ) : (
-        /* Tab 2: Manual TrxID Fallback */
+        /* Tab 2: Manual TrxID Fallback with Real Method Icons */
         <div>
           {manualSuccess ? (
             <div
               style={{
-                padding: "24px",
+                padding: "30px 24px",
                 background: "rgba(163, 230, 53, 0.1)",
                 border: "1px solid rgba(163, 230, 53, 0.3)",
-                borderRadius: "12px",
+                borderRadius: "16px",
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2.5rem", marginBottom: "10px" }}>🎉</div>
-              <h3 style={{ color: "var(--accent-lime)", fontSize: "1.2rem", marginBottom: "8px" }}>
-                ম্যানুয়াল টপআপ রিকোয়েস্ট জমা হয়েছে!
+              <CheckCircle2 size={48} className="text-lime-400 mx-auto mb-3" />
+              <h3 style={{ color: "var(--accent-lime)", fontSize: "1.3rem", marginBottom: "8px", fontWeight: 800 }}>
+                ম্যানুয়াল টপআপ রিকোয়েস্ট সফলভাবে জমা হয়েছে!
               </h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", margin: 0 }}>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", margin: 0 }}>
                 অ্যাডমিন ভেরিফাই করে ৫-১৫ মিনিটের মধ্যে আপনার ওয়ালেটে ৳{manualAmount} যোগ করে দেবেন।
               </p>
               <button
                 type="button"
                 onClick={() => setManualSuccess(false)}
                 className="btn btn-outline"
-                style={{ marginTop: "16px", padding: "6px 16px", fontSize: "0.85rem" }}
+                style={{ marginTop: "18px", padding: "8px 20px", fontSize: "0.88rem" }}
               >
                 আরেকটি রিকোয়েস্ট পাঠান
               </button>
@@ -304,23 +365,40 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
               <div
                 style={{
                   background: "rgba(0, 0, 0, 0.3)",
-                  padding: "16px",
-                  borderRadius: "10px",
+                  padding: "18px 20px",
+                  borderRadius: "14px",
                   border: "1px solid var(--border-color)",
-                  marginBottom: "20px",
-                  fontSize: "0.85rem",
-                  lineHeight: 1.6,
+                  marginBottom: "24px",
+                  fontSize: "0.88rem",
+                  lineHeight: 1.8,
                 }}
               >
-                <strong style={{ color: "var(--accent-cyan)", display: "block", marginBottom: "6px" }}>
+                <strong style={{ color: "var(--accent-cyan)", display: "block", marginBottom: "8px" }}>
                   📌 নিচের যেকোনো নম্বরে &quot;Send Money&quot; করে ট্রানজেকশন আইডি দিন:
                 </strong>
-                <div>• bKash: <strong style={{ color: "#E2136E" }}>01812345678</strong> (Personal)</div>
-                <div>• Nagad: <strong style={{ color: "#F7941D" }}>01912345678</strong> (Personal)</div>
-                <div>• Rocket: <strong style={{ color: "#8C2B89" }}>017123456789</strong> (Personal)</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div style={{ height: "22px", width: "55px", position: "relative" }}>
+                      <Image src="/payments/bkash.svg" alt="bKash" fill style={{ objectFit: "contain" }} />
+                    </div>
+                    <span><strong>01812345678</strong> (Personal)</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div style={{ height: "22px", width: "55px", position: "relative" }}>
+                      <Image src="/payments/nagad.svg" alt="Nagad" fill style={{ objectFit: "contain" }} />
+                    </div>
+                    <span><strong>01912345678</strong> (Personal)</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div style={{ height: "22px", width: "55px", position: "relative" }}>
+                      <Image src="/payments/rocket.svg" alt="Rocket" fill style={{ objectFit: "contain" }} />
+                    </div>
+                    <span><strong>017123456789</strong> (Personal)</span>
+                  </div>
+                </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "16px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "18px", marginBottom: "20px" }}>
                 <div>
                   <label style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "block", marginBottom: "6px" }}>
                     পেমেন্ট মাধ্যম
@@ -329,11 +407,11 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                     value={manualMethod}
                     onChange={(e) => setManualMethod(e.target.value as any)}
                     className="input"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", padding: "11px 14px" }}
                   >
-                    <option value="BKASH">bKash (বিকাশ)</option>
-                    <option value="NAGAD">Nagad (নগদ)</option>
-                    <option value="ROCKET">Rocket (রকেট)</option>
+                    <option value="BKASH">bKash (বিকাশ Send Money)</option>
+                    <option value="NAGAD">Nagad (নগদ Send Money)</option>
+                    <option value="ROCKET">Rocket (রকেট Send Money)</option>
                   </select>
                 </div>
 
@@ -347,7 +425,7 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                     value={senderNumber}
                     onChange={(e) => setSenderNumber(e.target.value)}
                     className="input"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", padding: "11px 14px" }}
                     required
                   />
                 </div>
@@ -363,7 +441,7 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                     value={manualAmount}
                     onChange={(e) => setManualAmount(Number(e.target.value))}
                     className="input"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", padding: "11px 14px" }}
                     required
                   />
                 </div>
@@ -378,41 +456,42 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                     value={trxId}
                     onChange={(e) => setTrxId(e.target.value)}
                     className="input"
-                    style={{ width: "100%", textTransform: "uppercase" }}
+                    style={{ width: "100%", padding: "11px 14px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: 700 }}
                     required
                   />
                 </div>
               </div>
 
               {/* AI OCR Screenshot Assist */}
-              <div style={{ marginBottom: "20px" }}>
+              <div style={{ marginBottom: "22px" }}>
                 <label style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "block", marginBottom: "6px" }}>
                   পেমেন্ট স্ক্রিনশট লিংক (ঐচ্ছিক) বা এআই স্ক্যান
                 </label>
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div style={{ display: "flex", gap: "10px" }}>
                   <input
                     type="text"
                     placeholder="https://... (স্ক্রিনশট ইমেজ লিংক)"
                     value={screenshotUrl}
                     onChange={(e) => setScreenshotUrl(e.target.value)}
                     className="input"
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, padding: "11px 14px" }}
                   />
                   <button
                     type="button"
                     onClick={handleScanScreenshot}
                     disabled={isOcrScanning}
                     className="btn btn-outline"
-                    style={{ whiteSpace: "nowrap", padding: "0 16px" }}
+                    style={{ whiteSpace: "nowrap", padding: "0 18px", fontWeight: 600 }}
                   >
-                    {isOcrScanning ? "🤖 স্ক্যান হচ্ছে..." : "🤖 AI Auto-Fill"}
+                    {isOcrScanning ? "স্ক্যান হচ্ছে..." : "AI Auto-Fill"}
                   </button>
                 </div>
               </div>
 
               {manualError && (
-                <div style={{ color: "#EF4444", fontSize: "0.85rem", marginBottom: "16px" }}>
-                  ⚠️ {manualError}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#EF4444", fontSize: "0.85rem", marginBottom: "18px" }}>
+                  <AlertCircle size={16} />
+                  <span>{manualError}</span>
                 </div>
               )}
 
@@ -420,7 +499,14 @@ export default function WalletTopupCard({ currentBalanceBdt }: WalletTopupCardPr
                 type="submit"
                 disabled={isManualLoading}
                 className="btn btn-lime"
-                style={{ padding: "12px 30px", fontSize: "1rem", fontWeight: 700 }}
+                style={{
+                  padding: "14px 34px",
+                  fontSize: "1rem",
+                  fontWeight: 800,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
               >
                 {isManualLoading ? "জমা হচ্ছে..." : "ভেরিফিকেশনের জন্য পাঠান ➔"}
               </button>

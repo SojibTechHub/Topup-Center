@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <rect width="120" height="40" rx="8" fill="#E2136E"/>
+  <path d="M22 8L15 20L28 20L22 8Z" fill="white" opacity="0.9"/>
+  <path d="M15 20L20 32L28 20L15 20Z" fill="white" opacity="0.8"/>
+  <path d="M28 20L36 12L28 8L28 20Z" fill="#F8E71C"/>
+  <path d="M28 20L38 24L34 32L28 20Z" fill="white"/>
+  <text x="46" y="26" fill="white" font-family="'Inter', sans-serif" font-weight="800" font-size="16" letter-spacing="-0.5">bKash</text>
+</svg>

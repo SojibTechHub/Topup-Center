@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <rect width="120" height="40" rx="8" fill="#F7941D"/>
+  <circle cx="24" cy="20" r="11" fill="white" fill-opacity="0.2"/>
+  <path d="M22 12C20 15 17 19 17 23C17 27 20 29 24 29C28 29 31 27 31 23C31 17 24 13 22 12Z" fill="white"/>
+  <path d="M24 16C23 18 20 21 20 23C20 25 22 26 24 26C26 26 28 25 28 23C28 20 25 17 24 16Z" fill="#F7941D"/>
+  <text x="44" y="26" fill="white" font-family="'Inter', sans-serif" font-weight="800" font-size="16" letter-spacing="-0.5">Nagad</text>
+</svg>

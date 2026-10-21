@@ -3,237 +3,195 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  Zap,
+  ShieldCheck,
+  Headphones,
+  BadgePercent,
+  Flame,
+  ArrowRight,
+  Search,
+  Sparkles,
+  Gamepad2,
+  CheckCircle2,
+  Clock,
+  Award,
+  ChevronRight,
+  Star,
+} from "lucide-react";
 
 // ─── Live Stats Ticker ────────────────────────────────────────────────────────
 const tickerItems = [
-  "🎮 রাফিউল UC কিনেছেন — ৳৮০০",
-  "⚡ সাকিব FF Diamond পেয়েছেন — ১০০০ Diamond",
-  "💎 তামিম COC Gems নিয়েছেন — ৳৫৫০",
-  "🏆 রিয়া MLBB Diamond পেয়েছেন — ৩২৮ Diamond",
-  "🔥 জাহিন Steam Wallet পেয়েছেন — $10",
-  "✅ মারিয়া DLS Coins নিয়েছেন — ২০০০ Coins",
+  "রাফিউল PUBG UC কিনেছেন — ৳৮০০",
+  "সাকিব Free Fire Diamond পেয়েছেন — ১০০০ Diamond",
+  "তামিম COC Gems নিয়েছেন — ৳৫৫০",
+  "রিয়া MLBB Diamond পেয়েছেন — ৩২৮ Diamond",
+  "জাহিন Steam Wallet পেয়েছেন — $10",
+  "মারিয়া DLS Gems নিয়েছেন — ৫০০ Gems",
+  "আসিফ Roblox Robux পেয়েছেন — ৪০০ Robux",
 ];
 
-// ─── Games Data ───────────────────────────────────────────────────────────────
+// ─── Games Data with REAL Artwork & Verified Slugs ────────────────────────────
 const featuredGames = [
   {
     slug: "free-fire",
-    name: "Free Fire",
-    nameBn: "ফ্রি ফায়ার",
+    name: "Free Fire Diamond",
+    nameBn: "ফ্রি ফায়ার ডায়মন্ড",
     category: "Battle Royale",
-    gradient: "linear-gradient(135deg, #FF6B35, #F7C59F)",
-    icon: "🔥",
-    minPrice: "৳৯০",
+    image: "/games/free-fire.jpg",
+    accentColor: "#F97316",
+    minPrice: "৳২৫",
+    deliveryTime: "১-৫ মিনিট",
     popular: true,
+    rating: 4.9,
   },
   {
     slug: "pubg-mobile",
-    name: "PUBG Mobile",
-    nameBn: "পাবজি মোবাইল",
+    name: "PUBG Mobile UC",
+    nameBn: "পাবজি মোবাইল ইউসি",
     category: "Battle Royale",
-    gradient: "linear-gradient(135deg, #F59E0B, #78350F)",
-    icon: "🎯",
-    minPrice: "৳১৬০",
+    image: "/games/pubg-mobile.jpg",
+    accentColor: "#F59E0B",
+    minPrice: "৳১১৫",
+    deliveryTime: "২-১০ মিনিট",
     popular: true,
-  },
-  {
-    slug: "clash-of-clans",
-    name: "Clash of Clans",
-    nameBn: "ক্ল্যাশ অব ক্ল্যান্স",
-    category: "Strategy",
-    gradient: "linear-gradient(135deg, #10B981, #064E3B)",
-    icon: "⚔️",
-    minPrice: "৳১১০",
-    popular: false,
+    rating: 4.8,
   },
   {
     slug: "mobile-legends",
     name: "Mobile Legends",
-    nameBn: "মোবাইল লিজেন্ডস",
+    nameBn: "মোবাইল লেজেন্ডস",
     category: "MOBA",
-    gradient: "linear-gradient(135deg, #3B82F6, #1E1B4B)",
-    icon: "🗡️",
-    minPrice: "৳৮৫",
+    image: "/games/mobile-legends.jpg",
+    accentColor: "#3B82F6",
+    minPrice: "৳১৬৫",
+    deliveryTime: "১-৫ মিনিট",
     popular: true,
+    rating: 4.9,
+  },
+  {
+    slug: "clash-of-clans",
+    name: "Clash of Clans",
+    nameBn: "ক্ল্যাশ অব ক্ল্যানস",
+    category: "Strategy",
+    image: "/games/clash-of-clans.jpg",
+    accentColor: "#22C55E",
+    minPrice: "৳১২৫",
+    deliveryTime: "৫-১৫ মিনিট",
+    popular: false,
+    rating: 4.8,
   },
   {
     slug: "roblox",
-    name: "Roblox",
-    nameBn: "রোবলক্স",
+    name: "Roblox Robux",
+    nameBn: "রোবলক্স রোবক্স",
     category: "Metaverse",
-    gradient: "linear-gradient(135deg, #EF4444, #7F1D1D)",
-    icon: "🧱",
-    minPrice: "৳৯৫",
-    popular: false,
+    image: "/games/roblox.jpg",
+    accentColor: "#EF4444",
+    minPrice: "৳১৩৫",
+    deliveryTime: "৫-২০ মিনিট",
+    popular: true,
+    rating: 4.9,
   },
   {
-    slug: "steam",
+    slug: "steam-wallet",
     name: "Steam Wallet",
-    nameBn: "স্টিম ওয়ালেট",
+    nameBn: "স্টিম ওয়ালেট কার্ড",
     category: "PC Gaming",
-    gradient: "linear-gradient(135deg, #6366F1, #1E1B4B)",
-    icon: "🖥️",
-    minPrice: "৳৮৫০",
+    image: "/games/steam-wallet.jpg",
+    accentColor: "#6366F1",
+    minPrice: "৳৫৫০",
+    deliveryTime: "১-১০ মিনিট",
     popular: false,
+    rating: 5.0,
   },
   {
-    slug: "dls",
+    slug: "dream-league-soccer",
     name: "Dream League Soccer",
-    nameBn: "ড্রিম লিগ সকার",
+    nameBn: "ড্রিম লিগ সকার (DLS)",
     category: "Sports",
-    gradient: "linear-gradient(135deg, #22D3EE, #164E63)",
-    icon: "⚽",
-    minPrice: "৳৬০",
+    image: "/games/dream-league-soccer.jpg",
+    accentColor: "#06B6D4",
+    minPrice: "৳১৯০",
+    deliveryTime: "১০-৩০ মিনিট",
     popular: false,
+    rating: 4.7,
   },
   {
     slug: "google-play",
     name: "Google Play",
-    nameBn: "গুগল প্লে",
+    nameBn: "গুগল প্লে গিফট কার্ড",
     category: "Gift Card",
-    gradient: "linear-gradient(135deg, #A3E635, #365314)",
-    icon: "🎁",
-    minPrice: "৳৮৫০",
+    image: "/games/google-play.jpg",
+    accentColor: "#A3E635",
+    minPrice: "৳৬২০",
+    deliveryTime: "১-১০ মিনিট",
     popular: false,
+    rating: 4.8,
   },
 ];
 
 const trustItems = [
-  { icon: "⚡", label: "তাৎক্ষণিক ডেলিভারি", desc: "গড় ৫-১০ মিনিট" },
-  { icon: "🔒", label: "১০০% সুরক্ষিত", desc: "SSL + বাংলাদেশ পেমেন্ট" },
-  { icon: "💬", label: "২৪/৭ সাপোর্ট", desc: "AI + মানবিক সহায়তা" },
-  { icon: "💰", label: "সর্বনিম্ন দাম", desc: "মার্কেটের সেরা রেট" },
+  { icon: Zap, label: "তাৎক্ষণিক ডেলিভারি", desc: "গড় ১-৫ মিনিটের মধ্যে স্বয়ংক্রিয়", color: "#22D3EE" },
+  { icon: ShieldCheck, label: "১০০% নিরাপদ ও সুরক্ষিত", desc: "অফিশিয়াল ডায়মন্ড ও লাইসেন্সড কোড", color: "#A3E635" },
+  { icon: Headphones, label: "২৪/৭ লাইভ সাপোর্ট", desc: "হোয়াটসঅ্যাপ, টেলিগ্রাম ও এআই অ্যাসিস্ট্যান্ট", color: "#F43F5E" },
+  { icon: BadgePercent, label: "সর্বনিম্ন বাজারদর", desc: "বিকাশ, নগদ ও রকেটে সেরা রেট", color: "#FBBF24" },
 ];
 
 const howItWorks = [
   {
     step: "০১",
     title: "গেম বেছে নিন",
-    desc: "আমাদের ক্যাটালগ থেকে আপনার পছন্দের গেম সিলেক্ট করুন",
+    desc: "আমাদের ক্যাটালগ থেকে আপনার পছন্দের গেম বা ভাউচার সিলেক্ট করুন",
     color: "var(--accent-cyan)",
   },
   {
     step: "০২",
-    title: "প্যাকেজ সিলেক্ট করুন",
-    desc: "আপনার বাজেট অনুযায়ী সেরা ডায়মন্ড/UC প্যাকেজ বেছে নিন",
+    title: "আইডি ও প্যাকেজ দিন",
+    desc: "আপনার প্লেয়ার আইডি লিখে কাঙ্ক্ষিত ডায়মন্ড বা ইউসি প্যাকেজ বেছে নিন",
     color: "var(--accent-lime)",
   },
   {
     step: "০৩",
-    title: "পেমেন্ট করুন",
-    desc: "bKash, Nagad, Rocket বা কার্ডে পেমেন্ট করুন",
+    title: "পেমেন্ট সম্পন্ন করুন",
+    desc: "বিকাশ, নগদ, রকেট বা কার্ডে মুহূর্তেই নিরাপদ পেমেন্ট করুন",
     color: "var(--accent-magenta)",
   },
   {
     step: "০৪",
-    title: "ডায়মন্ড পান",
-    desc: "৫-১০ মিনিটের মধ্যে আপনার একাউন্টে ডায়মন্ড/UC জমা হয়ে যাবে",
+    title: "ইনস্ট্যান্ট ডেলিভারি পান",
+    desc: "১ থেকে ৫ মিনিটের মধ্যে সরাসরি আপনার ইন-গেম অ্যাকাউন্টে টপআপ যোগ হয়ে যাবে",
     color: "var(--accent-gold)",
   },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [tickerIndex, setTickerIndex] = useState(0);
   const [stats, setStats] = useState({
     orders: 12847,
     customers: 8923,
-    games: 12,
+    games: 8,
   });
 
-  // Animate stats counter
+  // Animate stats counter periodically
   useEffect(() => {
     const timer = setInterval(() => {
       setStats((s) => ({
-        orders: s.orders + Math.floor(Math.random() * 3),
-        customers: s.customers + (Math.random() > 0.7 ? 1 : 0),
+        orders: s.orders + Math.floor(Math.random() * 2),
+        customers: s.customers + (Math.random() > 0.8 ? 1 : 0),
         games: s.games,
       }));
-    }, 5000);
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div style={{ fontFamily: "'Space Grotesk', 'Anek Bangla', sans-serif" }}>
-      {/* ── Navbar ─────────────────────────────────────────────────────────── */}
-      <nav
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "rgba(7, 10, 18, 0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--border-default)",
-          padding: "0 24px",
-          height: "64px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Logo */}
-        <Link
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            textDecoration: "none",
-          }}
-        >
-          <div
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "10px",
-              background: "var(--gradient-primary)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "20px",
-            }}
-          >
-            🎮
-          </div>
-          <div>
-            <div
-              className="gradient-text"
-              style={{ fontSize: "1.1rem", fontWeight: 800, lineHeight: 1 }}
-            >
-              Topup Center
-            </div>
-            <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", lineHeight: 1 }}>
-              গেমারদের বিশ্বস্ত বন্ধু
-            </div>
-          </div>
-        </Link>
-
-        {/* Nav Links */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
-          <Link href="/games" className="btn btn-ghost btn-sm">
-            গেমস
-          </Link>
-          <Link href="/login" className="btn btn-secondary btn-sm">
-            লগইন
-          </Link>
-          <Link href="/register" className="btn btn-primary btn-sm">
-            শুরু করুন
-          </Link>
-        </div>
-      </nav>
-
-      {/* ── Live Ticker ───────────────────────────────────────────────────── */}
+    <div style={{ minHeight: "100vh", background: "var(--bg-base)" }}>
+      {/* ── Live Ticker ── */}
       <div
         style={{
           background: "rgba(34, 211, 238, 0.05)",
-          borderBottom: "1px solid rgba(34, 211, 238, 0.1)",
-          padding: "8px 0",
+          borderBottom: "1px solid rgba(34, 211, 238, 0.15)",
+          padding: "10px 0",
           overflow: "hidden",
         }}
       >
@@ -241,300 +199,518 @@ export default function HomePage() {
           className="ticker-content"
           style={{
             display: "inline-flex",
-            gap: "48px",
+            gap: "50px",
             color: "var(--text-secondary)",
-            fontSize: "0.8rem",
+            fontSize: "0.85rem",
+            alignItems: "center",
           }}
         >
           {[...tickerItems, ...tickerItems].map((item, i) => (
-            <span key={i} style={{ whiteSpace: "nowrap" }}>
+            <span key={i} style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Zap size={13} className="text-cyan-400" />
               {item}
             </span>
           ))}
         </div>
       </div>
 
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      {/* ── Hero Section ── */}
       <section
-        className="alpona-bg"
         style={{
-          padding: "80px 24px 100px",
-          textAlign: "center",
+          padding: "70px 24px 90px",
           position: "relative",
           overflow: "hidden",
+          borderBottom: "1px solid var(--border-default)",
         }}
       >
-        {/* Hero glow */}
+        {/* Glow ambient lights */}
         <div
           style={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "600px",
+            top: "20%",
+            left: "15%",
+            width: "500px",
             height: "400px",
-            background:
-              "radial-gradient(ellipse, rgba(34,211,238,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse, rgba(34,211,238,0.15) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "30%",
+            right: "10%",
+            width: "500px",
+            height: "400px",
+            background: "radial-gradient(ellipse, rgba(163,230,53,0.12) 0%, transparent 70%)",
             pointerEvents: "none",
           }}
         />
 
-        <div style={{ position: "relative", zIndex: 1 }}>
-          {/* Badge */}
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <div
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "rgba(34, 211, 238, 0.1)",
-              border: "1px solid rgba(34, 211, 238, 0.25)",
-              borderRadius: "100px",
-              padding: "6px 16px",
-              marginBottom: "24px",
-              fontSize: "0.8rem",
-              color: "var(--accent-cyan)",
-            }}
-          >
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "var(--accent-lime)",
-                display: "inline-block",
-                animation: "pulse-glow 2s infinite",
-              }}
-            />
-            ১২,৮০০+ সফল টপআপ সম্পন্ন
-          </div>
-
-          <h1
-            style={{
-              marginBottom: "20px",
-              maxWidth: "700px",
-              margin: "0 auto 20px",
-            }}
-          >
-            <span className="gradient-text">গেমিং টপআপ</span>
-            <br />
-            <span style={{ color: "var(--text-primary)", fontFamily: "'Anek Bangla', sans-serif" }}>
-              এখন আরও সহজ
-            </span>
-          </h1>
-
-          <p
-            style={{
-              color: "var(--text-secondary)",
-              fontSize: "1.15rem",
-              maxWidth: "560px",
-              margin: "0 auto 40px",
-              lineHeight: "1.7",
-              fontFamily: "'Anek Bangla', sans-serif",
-            }}
-          >
-            Free Fire, PUBG, Clash of Clans সহ ১২+ গেমের টপআপ। bKash,
-            Nagad, Rocket-এ পেমেন্ট করুন। মিনিটের মধ্যে পান।
-          </p>
-
-          <div
-            style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}
-          >
-            <Link href="/games" className="btn btn-primary btn-xl">
-              🎮 এখনই টপআপ করুন
-            </Link>
-            <Link href="/register" className="btn btn-secondary btn-xl">
-              বিনামূল্যে যোগ দিন
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
               gap: "48px",
-              marginTop: "64px",
-              flexWrap: "wrap",
+              alignItems: "center",
             }}
           >
-            {[
-              { value: stats.orders.toLocaleString("bn-BD") + "+", label: "সফল অর্ডার" },
-              { value: stats.customers.toLocaleString("bn-BD") + "+", label: "সন্তুষ্ট গেমার" },
-              { value: stats.games + "+", label: "গেম ক্যাটালগ" },
-              { value: "৳৫০ থেকে", label: "শুরু হয়" },
-            ].map((stat, i) => (
-              <div key={i} style={{ textAlign: "center" }}>
-                <div
-                  className="gradient-text"
-                  style={{ fontSize: "2rem", fontWeight: 800 }}
-                >
-                  {stat.value}
-                </div>
-                <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Trust Strip ───────────────────────────────────────────────────── */}
-      <section
-        style={{
-          padding: "32px 24px",
-          background: "var(--bg-surface)",
-          borderTop: "1px solid var(--border-default)",
-          borderBottom: "1px solid var(--border-default)",
-        }}
-      >
-        <div
-          className="container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "24px",
-          }}
-        >
-          {trustItems.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-              }}
-            >
-              <div style={{ fontSize: "28px" }}>{item.icon}</div>
-              <div>
-                <div
+            {/* Left Content */}
+            <div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "rgba(34, 211, 238, 0.1)",
+                  border: "1px solid rgba(34, 211, 238, 0.3)",
+                  borderRadius: "100px",
+                  padding: "6px 16px",
+                  marginBottom: "20px",
+                  fontSize: "0.85rem",
+                  color: "var(--accent-cyan)",
+                  fontWeight: 600,
+                }}
+              >
+                <span
                   style={{
-                    color: "var(--text-primary)",
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    fontFamily: "'Anek Bangla', sans-serif",
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "var(--accent-lime)",
+                    display: "inline-block",
+                    boxShadow: "0 0 10px #A3E635",
+                  }}
+                />
+                বাংলাদেশের বিশ্বস্ত গেমিং টপআপ প্ল্যাটফর্ম
+              </div>
+
+              <h1
+                style={{
+                  fontSize: "clamp(2.3rem, 5vw, 3.4rem)",
+                  fontWeight: 900,
+                  lineHeight: 1.15,
+                  marginBottom: "20px",
+                  letterSpacing: "-1px",
+                }}
+              >
+                গেমিং টপআপ এখন{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #22D3EE 0%, #A3E635 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                   }}
                 >
-                  {item.label}
+                  এক ক্লিকে ইনস্ট্যান্ট
+                </span>
+              </h1>
+
+              <p
+                style={{
+                  color: "var(--text-secondary)",
+                  fontSize: "1.1rem",
+                  lineHeight: 1.7,
+                  marginBottom: "36px",
+                  maxWidth: "520px",
+                }}
+              >
+                Free Fire, PUBG, Mobile Legends, Clash of Clans সহ সব গেমের ডায়মন্ড ও ইউসি কিনুন
+                বিকাশ, নগদ, রকেটে। ১-৫ মিনিটে সরাসরি অ্যাকাউন্টে পৌঁছে যাবে।
+              </p>
+
+              {/* CTAs */}
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginBottom: "40px" }}>
+                <Link
+                  href="/games"
+                  className="btn btn-cyan btn-xl"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    boxShadow: "0 0 30px rgba(34, 211, 238, 0.4)",
+                  }}
+                >
+                  <Gamepad2 size={20} />
+                  <span>এখনই টপআপ করুন</span>
+                  <ArrowRight size={18} />
+                </Link>
+                <Link
+                  href="/games?category=mobile"
+                  className="btn btn-secondary btn-xl"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                >
+                  <span>জনপ্রিয় গেমস</span>
+                </Link>
+              </div>
+
+              {/* Mini Stats Banner */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gap: "16px",
+                  paddingTop: "24px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent-cyan)" }}>
+                    {stats.orders.toLocaleString("bn-BD")}+
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>সফল টপআপ</div>
                 </div>
-                <div style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>
-                  {item.desc}
+                <div>
+                  <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent-lime)" }}>
+                    {stats.customers.toLocaleString("bn-BD")}+
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>সন্তুষ্ট গেমার</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent-magenta)" }}>
+                    ১-৫ মিনিট
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>গড় ডেলিভারি</div>
                 </div>
               </div>
             </div>
-          ))}
+
+            {/* Right Showcase Artwork Banner */}
+            <div style={{ position: "relative" }}>
+              <div
+                className="glass-card"
+                style={{
+                  position: "relative",
+                  borderRadius: "24px",
+                  overflow: "hidden",
+                  border: "2px solid rgba(34, 211, 238, 0.3)",
+                  boxShadow: "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(34, 211, 238, 0.2)",
+                  height: "440px",
+                }}
+              >
+                <Image
+                  src="/brand/hero-banner.jpg"
+                  alt="Topup Center Hero Showcase"
+                  fill
+                  priority
+                  style={{ objectFit: "cover" }}
+                />
+
+                {/* Gradient overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to top, rgba(7, 10, 18, 0.9) 0%, transparent 60%)",
+                  }}
+                />
+
+                {/* Floating Badge 1: Free Fire */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "24px",
+                    left: "20px",
+                    background: "rgba(7, 10, 18, 0.85)",
+                    backdropFilter: "blur(12px)",
+                    border: "1px solid rgba(249, 115, 22, 0.4)",
+                    borderRadius: "14px",
+                    padding: "10px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  <div style={{ width: "38px", height: "38px", position: "relative", borderRadius: "8px", overflow: "hidden" }}>
+                    <Image src="/games/free-fire.jpg" alt="Free Fire" fill style={{ objectFit: "cover" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F97316" }}>Free Fire 25💎</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--accent-lime)", fontWeight: 700 }}>৳ ২৫ (ইনস্ট্যান্ট)</div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 2: PUBG UC */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "24px",
+                    right: "20px",
+                    background: "rgba(7, 10, 18, 0.85)",
+                    backdropFilter: "blur(12px)",
+                    border: "1px solid rgba(245, 158, 11, 0.4)",
+                    borderRadius: "14px",
+                    padding: "10px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  <div style={{ width: "38px", height: "38px", position: "relative", borderRadius: "8px", overflow: "hidden" }}>
+                    <Image src="/games/pubg-mobile.jpg" alt="PUBG" fill style={{ objectFit: "cover" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F59E0B" }}>PUBG 60 UC</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--accent-lime)", fontWeight: 700 }}>৳ ১১৫ (সেরা রেট)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── Games Grid ────────────────────────────────────────────────────── */}
+      {/* ── Trust Features Strip ── */}
+      <section
+        style={{
+          padding: "36px 24px",
+          background: "var(--bg-surface)",
+          borderBottom: "1px solid var(--border-default)",
+        }}
+      >
+        <div className="container">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {trustItems.map((item, i) => {
+              const IconComp = item.icon;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    padding: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "14px",
+                      background: `${item.color}18`,
+                      border: `1px solid ${item.color}35`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <IconComp size={24} style={{ color: item.color }} />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        color: "var(--text-primary)",
+                        fontWeight: 700,
+                        fontSize: "0.95rem",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                    <div style={{ color: "var(--text-muted)", fontSize: "0.8rem", lineHeight: 1.4 }}>
+                      {item.desc}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Featured Games Grid with REAL ARTWORK ── */}
       <section style={{ padding: "80px 24px" }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <h2>
-              <span className="gradient-text">জনপ্রিয় গেমস</span>
-            </h2>
-            <p
-              style={{
-                color: "var(--text-secondary)",
-                marginTop: "12px",
-                fontFamily: "'Anek Bangla', sans-serif",
-              }}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}>
+            <div>
+              <div style={{ fontSize: "0.85rem", color: "var(--accent-cyan)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px" }}>
+                জনপ্রিয় গেমস
+              </div>
+              <h2 style={{ fontSize: "2.1rem", fontWeight: 800, margin: 0, color: "var(--text-primary)" }}>
+                আপনার পছন্দের গেম বেছে নিন
+              </h2>
+            </div>
+            <Link
+              href="/games"
+              className="btn btn-outline"
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
             >
-              আপনার পছন্দের গেম বেছে নিন এবং এখনই টপআপ করুন
-            </p>
+              সব গেম দেখুন ({featuredGames.length}) <ChevronRight size={16} />
+            </Link>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "20px",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gap: "24px",
             }}
           >
             {featuredGames.map((game) => (
-              <Link key={game.slug} href={`/games/${game.slug}`} style={{ textDecoration: "none" }}>
+              <Link
+                key={game.slug}
+                href={`/games/${game.slug}`}
+                className="glass-card tilt-card group"
+                style={{
+                  textDecoration: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRadius: "18px",
+                  overflow: "hidden",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  transition: "transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+                }}
+              >
+                {/* REAL Game Cover Area */}
                 <div
-                  className="glass-card tilt-card"
                   style={{
-                    padding: "24px",
-                    cursor: "pointer",
+                    height: "190px",
                     position: "relative",
+                    overflow: "hidden",
+                    background: "#0d111d",
                   }}
                 >
-                  {game.popular && (
-                    <div
-                      className="badge badge-cyan"
+                  <Image
+                    src={game.image}
+                    alt={game.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 300px"
+                    style={{
+                      objectFit: "cover",
+                      transition: "transform 0.4s ease",
+                    }}
+                    className="group-hover:scale-105"
+                  />
+
+                  {/* Gradient vignette */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "linear-gradient(to top, rgba(7, 10, 18, 0.95) 0%, rgba(7, 10, 18, 0.2) 60%, transparent 100%)",
+                    }}
+                  />
+
+                  {/* Badges */}
+                  <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+                    {game.popular && (
+                      <span className="badge badge-magenta" style={{ fontSize: "0.68rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                        <Flame size={11} /> Popular
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ position: "absolute", bottom: "10px", left: "14px", display: "flex", gap: "6px" }}>
+                    <span
                       style={{
-                        position: "absolute",
-                        top: "12px",
-                        right: "12px",
-                        fontSize: "0.65rem",
+                        background: "rgba(0, 0, 0, 0.7)",
+                        backdropFilter: "blur(6px)",
+                        color: "var(--accent-cyan)",
+                        fontSize: "0.7rem",
+                        padding: "2px 8px",
+                        borderRadius: "6px",
+                        fontWeight: 600,
                       }}
                     >
-                      🔥 জনপ্রিয়
-                    </div>
-                  )}
+                      {game.category}
+                    </span>
+                    <span
+                      style={{
+                        background: "rgba(0, 0, 0, 0.7)",
+                        backdropFilter: "blur(6px)",
+                        color: "var(--accent-lime)",
+                        fontSize: "0.7rem",
+                        padding: "2px 8px",
+                        borderRadius: "6px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      ⚡ {game.deliveryTime}
+                    </span>
+                  </div>
+                </div>
 
-                  {/* Game icon */}
+                {/* Info Area */}
+                <div style={{ padding: "18px", display: "flex", flexDirection: "column", flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+                    <h3
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        margin: 0,
+                      }}
+                    >
+                      {game.nameBn}
+                    </h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: "3px", fontSize: "0.78rem", color: "#FACC15" }}>
+                      <Star size={12} fill="#FACC15" />
+                      <span>{game.rating}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "16px" }}>
+                    {game.name}
+                  </div>
+
                   <div
                     style={{
-                      width: "60px",
-                      height: "60px",
-                      borderRadius: "16px",
-                      background: game.gradient,
+                      marginTop: "auto",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "28px",
-                      marginBottom: "16px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+                      justifyContent: "space-between",
+                      borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+                      paddingTop: "12px",
                     }}
                   >
-                    {game.icon}
-                  </div>
+                    <div>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "block" }}>শুরু মাত্র</span>
+                      <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--accent-lime)" }}>
+                        {game.minPrice}
+                      </span>
+                    </div>
 
-                  <div
-                    style={{
-                      fontWeight: 700,
-                      color: "var(--text-primary)",
-                      marginBottom: "4px",
-                      fontFamily: "'Anek Bangla', 'Space Grotesk', sans-serif",
-                    }}
-                  >
-                    {game.nameBn}
-                  </div>
-                  <div style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginBottom: "12px" }}>
-                    {game.category}
-                  </div>
-                  <div style={{ color: "var(--accent-lime)", fontWeight: 600, fontSize: "0.85rem" }}>
-                    {game.minPrice} থেকে শুরু →
+                    <span
+                      className="btn btn-outline btn-sm"
+                      style={{ fontSize: "0.8rem", padding: "6px 12px", borderRadius: "8px" }}
+                    >
+                      টপআপ ➔
+                    </span>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
-
-          <div style={{ textAlign: "center", marginTop: "32px" }}>
-            <Link href="/games" className="btn btn-outline">
-              সব গেম দেখুন →
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* ── How It Works ──────────────────────────────────────────────────── */}
+      {/* ── How It Works (৪ সহজ ধাপ) ── */}
       <section
         style={{
           padding: "80px 24px",
           background: "var(--bg-surface)",
           borderTop: "1px solid var(--border-default)",
+          borderBottom: "1px solid var(--border-default)",
         }}
       >
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <h2>
-              <span style={{ color: "var(--text-primary)" }}>কিভাবে কাজ করে?</span>
+          <div style={{ textAlign: "center", marginBottom: "50px" }}>
+            <h2 style={{ fontSize: "2.1rem", fontWeight: 800, marginBottom: "12px" }}>
+              কীভাবে টপআপ করবেন? <span className="gradient-text">(৪টি সহজ ধাপ)</span>
             </h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: "1rem" }}>
+              কোনো জটিলতা ছাড়াই মাত্র ২ মিনিটে আপনার পছন্দের গেম টপআপ করুন
+            </p>
           </div>
 
           <div
@@ -548,15 +724,19 @@ export default function HomePage() {
               <div
                 key={i}
                 className="glass-card"
-                style={{ padding: "28px", position: "relative" }}
+                style={{
+                  padding: "28px 24px",
+                  borderRadius: "18px",
+                  border: "1px solid rgba(255, 255, 255, 0.06)",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
               >
                 <div
                   style={{
                     fontSize: "2.5rem",
-                    fontWeight: 800,
-                    color: step.color,
-                    opacity: 0.3,
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 900,
+                    color: "rgba(255, 255, 255, 0.07)",
                     lineHeight: 1,
                     marginBottom: "16px",
                   }}
@@ -565,22 +745,15 @@ export default function HomePage() {
                 </div>
                 <h3
                   style={{
-                    fontSize: "1.1rem",
+                    fontSize: "1.15rem",
+                    fontWeight: 700,
                     marginBottom: "8px",
                     color: step.color,
-                    fontFamily: "'Anek Bangla', sans-serif",
                   }}
                 >
                   {step.title}
                 </h3>
-                <p
-                  style={{
-                    color: "var(--text-secondary)",
-                    fontSize: "0.9rem",
-                    lineHeight: 1.6,
-                    fontFamily: "'Anek Bangla', sans-serif",
-                  }}
-                >
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
                   {step.desc}
                 </p>
               </div>
@@ -589,186 +762,108 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Payment Methods ────────────────────────────────────────────────── */}
-      <section style={{ padding: "60px 24px" }}>
+      {/* ── Payment Methods with REAL Official SVG Logos ── */}
+      <section style={{ padding: "70px 24px" }}>
         <div className="container" style={{ textAlign: "center" }}>
-          <h3 style={{ color: "var(--text-secondary)", fontWeight: 400, marginBottom: "24px", fontFamily: "'Anek Bangla', sans-serif" }}>
-            পেমেন্ট পদ্ধতি
-          </h3>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              color: "var(--accent-lime)",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              marginBottom: "8px",
+            }}
+          >
+            <ShieldCheck size={16} /> ১০০% অনুমোদিত পেমেন্ট গেটওয়ে
+          </div>
+          <h2 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "32px", color: "var(--text-primary)" }}>
+            আমাদের পেমেন্ট মাধ্যমসমূহ
+          </h2>
+
           <div
             style={{
               display: "flex",
               justifyContent: "center",
-              gap: "16px",
+              gap: "20px",
               flexWrap: "wrap",
+              alignItems: "center",
             }}
           >
             {[
-              { name: "bKash", color: "#E2136E", icon: "📱" },
-              { name: "Nagad", color: "#F7941D", icon: "💳" },
-              { name: "Rocket", color: "#8B2FC9", icon: "🚀" },
-              { name: "Card", color: "#1A56DB", icon: "💳" },
+              { name: "bKash", file: "/payments/bkash.svg", desc: "বিকাশ অটোমেটেড" },
+              { name: "Nagad", file: "/payments/nagad.svg", desc: "নগদ ইনস্ট্যান্ট" },
+              { name: "Rocket", file: "/payments/rocket.svg", desc: "রকেট পেমেন্ট" },
+              { name: "Cards", file: "/payments/card.svg", desc: "ভিসা / মাস্টারকার্ড" },
             ].map((method) => (
               <div
                 key={method.name}
                 className="glass-card"
                 style={{
-                  padding: "12px 24px",
+                  padding: "16px 24px",
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  gap: "8px",
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  color: method.color,
-                  minWidth: "120px",
-                  justifyContent: "center",
+                  gap: "10px",
+                  borderRadius: "16px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  minWidth: "160px",
+                  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
                 }}
               >
-                {method.icon} {method.name}
+                <div style={{ height: "36px", width: "100px", position: "relative" }}>
+                  <Image src={method.file} alt={method.name} fill style={{ objectFit: "contain" }} />
+                </div>
+                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+                  {method.desc}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────────────────────────── */}
+      {/* ── Call To Action ── */}
       <section
         style={{
-          padding: "80px 24px",
-          background:
-            "linear-gradient(135deg, rgba(34,211,238,0.05) 0%, rgba(163,230,53,0.05) 100%)",
+          padding: "90px 24px",
+          background: "linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(163,230,53,0.08) 100%)",
           borderTop: "1px solid var(--border-default)",
           textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div className="container">
-          <h2 style={{ marginBottom: "16px", fontFamily: "'Anek Bangla', sans-serif" }}>
-            আজই শুরু করুন
+        <div className="container" style={{ position: "relative", zIndex: 1, maxWidth: "680px", margin: "0 auto" }}>
+          <h2 style={{ fontSize: "2.3rem", fontWeight: 900, marginBottom: "16px" }}>
+            আজই জয়েন করুন <span className="gradient-text">Topup Center-এ</span>
           </h2>
-          <p
-            style={{
-              color: "var(--text-secondary)",
-              marginBottom: "32px",
-              fontFamily: "'Anek Bangla', sans-serif",
-            }}
-          >
-            বিনামূল্যে অ্যাকাউন্ট খুলুন এবং প্রথম অর্ডারে বিশেষ ছাড় পান
+          <p style={{ color: "var(--text-secondary)", fontSize: "1.05rem", lineHeight: 1.7, marginBottom: "32px" }}>
+            ফ্রি অ্যাকাউন্ট তৈরি করুন এবং প্রথম অর্ডারে কুপন কোড <strong>WELCOME50</strong> ব্যবহার করে ৫০ টাকা ছাড় উপভোগ করুন।
           </p>
-          <Link href="/register" className="btn btn-primary btn-xl">
-            🎮 বিনামূল্যে যোগ দিন
-          </Link>
+          <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link
+              href="/register"
+              className="btn btn-primary btn-xl"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                boxShadow: "0 0 30px rgba(34, 211, 238, 0.35)",
+              }}
+            >
+              <span>ফ্রি অ্যাকাউন্ট খুলুন</span>
+              <ArrowRight size={18} />
+            </Link>
+            <Link href="/games" className="btn btn-outline btn-xl">
+              ক্যাটালগ ব্রাউজ করুন
+            </Link>
+          </div>
         </div>
       </section>
-
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer
-        style={{
-          background: "var(--bg-surface)",
-          borderTop: "1px solid var(--border-default)",
-          padding: "48px 24px 32px",
-        }}
-      >
-        <div className="container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "32px",
-              marginBottom: "40px",
-            }}
-          >
-            {/* Brand */}
-            <div>
-              <div className="gradient-text" style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: "8px" }}>
-                🎮 Topup Center
-              </div>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", fontFamily: "'Anek Bangla', sans-serif" }}>
-                বাংলাদেশের গেমারদের বিশ্বস্ত টপআপ মার্কেটপ্লেস
-              </p>
-            </div>
-
-            {/* Links */}
-            {[
-              {
-                title: "সেবাসমূহ",
-                links: [
-                  { label: "গেম ক্যাটালগ", href: "/games" },
-                  { label: "ওয়ালেট", href: "/wallet" },
-                  { label: "অর্ডার ট্র্যাক", href: "/orders" },
-                  { label: "সাপোর্ট", href: "/support" },
-                ],
-              },
-              {
-                title: "কোম্পানি",
-                links: [
-                  { label: "আমাদের সম্পর্কে", href: "/about" },
-                  { label: "FAQ", href: "/faq" },
-                  { label: "রিভিউ", href: "/reviews" },
-                  { label: "যোগাযোগ", href: "/contact" },
-                ],
-              },
-              {
-                title: "নীতিমালা",
-                links: [
-                  { label: "Terms of Service", href: "/terms" },
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Refund Policy", href: "/refund" },
-                ],
-              },
-            ].map((section) => (
-              <div key={section.title}>
-                <div
-                  style={{
-                    color: "var(--text-primary)",
-                    fontWeight: 600,
-                    marginBottom: "12px",
-                    fontSize: "0.9rem",
-                    fontFamily: "'Anek Bangla', sans-serif",
-                  }}
-                >
-                  {section.title}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {section.links.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      style={{
-                        color: "var(--text-muted)",
-                        fontSize: "0.85rem",
-                        textDecoration: "none",
-                        transition: "color 0.2s",
-                        fontFamily: "'Anek Bangla', 'Space Grotesk', sans-serif",
-                      }}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div
-            style={{
-              borderTop: "1px solid var(--border-default)",
-              paddingTop: "24px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
-            <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", fontFamily: "'Anek Bangla', sans-serif" }}>
-              © ২০২৪ Topup Center। সর্বস্বত্ব সংরক্ষিত।
-            </p>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
-              Powered by Next.js + Neon + UddoktaPay
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

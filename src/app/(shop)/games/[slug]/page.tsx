@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import GameCheckoutForm from "@/components/shop/GameCheckoutForm";
+import { getCatalogGame, normalizeSlug } from "@/lib/catalog-data";
+import { ShieldCheck, Zap, Star, Info, ChevronRight, Gamepad2, Award } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -10,8 +13,10 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
+  const normalized = normalizeSlug(slug);
+
   try {
-    const game = await db.game.findUnique({ where: { slug } });
+    const game = await db.game.findUnique({ where: { slug: normalized } });
     if (game) {
       return {
         title: `${game.name} টপআপ | Topup Center`,
@@ -21,16 +26,26 @@ export async function generateMetadata({ params }: PageProps) {
   } catch {
     // fallback
   }
+
+  const catalog = getCatalogGame(normalized);
+  if (catalog) {
+    return {
+      title: `${catalog.nameBn} (${catalog.name}) টপআপ | Topup Center`,
+      description: catalog.descriptionBn,
+    };
+  }
+
   return {
     title: "গেম টপআপ | Topup Center",
   };
 }
 
 export default async function GameDetailPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = normalizeSlug(rawSlug);
   const session = await auth();
 
-  let game = null;
+  let game: any = null;
   let savedPlayerIds: Array<{ id: string; label: string | null; playerFields: Record<string, string> }> = [];
 
   try {
@@ -44,9 +59,9 @@ export default async function GameDetailPage({ params }: PageProps) {
       },
     });
 
-    if (session?.user?.id) {
+    if (session?.user?.id && game?.id) {
       const saved = await db.savedPlayerId.findMany({
-        where: { userId: session.user.id, gameId: game?.id },
+        where: { userId: session.user.id, gameId: game.id },
       });
       savedPlayerIds = saved.map((s) => ({
         id: s.id,
@@ -55,44 +70,40 @@ export default async function GameDetailPage({ params }: PageProps) {
       }));
     }
   } catch (e) {
-    console.error("Error loading game detail:", e);
+    console.error("DB query failed, using catalog fallback for slug:", slug);
   }
 
-  // Fallback demo game if DB not seeded
-  if (!game) {
-    if (slug === "free-fire") {
-      game = {
-        id: "demo-ff",
-        slug: "free-fire",
-        name: "ফ্রি ফায়ার ডায়মন্ড (Free Fire)",
-        nameEn: "Free Fire Diamond",
-        category: "mobile",
-        description: "গ্যারেনা ফ্রি ফায়ার ইন-গেম ডায়মন্ড টপআপ। প্লেয়ার আইডি দিয়ে মুহূর্তের মধ্যে ডেলিভারি পান।",
-        howToFind: "১. গেম ওপেন করুন।\n২. উপরে বামে প্রোফাইল ব্যানারে ট্যাপ করুন।\n৩. আপনার প্রোফাইল আইডি (UID) কপি করুন।",
-        fields: [
-          {
-            key: "player_id",
-            label: "Player ID (UID)",
-            labelBn: "প্লেয়ার আইডি (UID)",
-            type: "text",
-            placeholder: "e.g. 123456789",
-            regex: "^\\d{8,11}$",
-            required: true,
-            errorMessage: "সঠিক ৮-১১ ডিজিটের প্লেয়ার আইডি দিন",
-          },
-        ] as any,
-        packages: [
-          { id: "ff-1", name: "25 Diamonds", amountLabel: "25 💎", pricePoisha: BigInt(2500), sort: 1, isPopular: false, deliveryTime: "১-৫ মিনিট" },
-          { id: "ff-2", name: "50 Diamonds", amountLabel: "50 💎", pricePoisha: BigInt(4500), sort: 2, isPopular: false, deliveryTime: "১-৫ মিনিট" },
-          { id: "ff-3", name: "115 Diamonds", amountLabel: "115 💎", pricePoisha: BigInt(9500), sort: 3, isPopular: true, deliveryTime: "১-৫ মিনিট" },
-          { id: "ff-4", name: "240 Diamonds", amountLabel: "240 💎", pricePoisha: BigInt(19000), sort: 4, isPopular: false, deliveryTime: "১-৫ মিনিট" },
-          { id: "ff-5", name: "610 Diamonds", amountLabel: "610 💎", pricePoisha: BigInt(47000), sort: 5, isPopular: false, deliveryTime: "১-৫ মিনিট" },
-          { id: "ff-6", name: "Weekly Membership", amountLabel: "Weekly 🌟", pricePoisha: BigInt(19500), sort: 6, isPopular: true, deliveryTime: "১-৫ মিনিট" },
-        ] as any,
-      };
-    } else {
-      notFound();
-    }
+  // Fallback to rich catalog data if DB is offline or not seeded
+  const catalogFallback = getCatalogGame(slug);
+  if (!game && catalogFallback) {
+    game = {
+      id: catalogFallback.id,
+      slug: catalogFallback.slug,
+      name: catalogFallback.nameBn,
+      nameEn: catalogFallback.nameEn,
+      category: catalogFallback.category,
+      categoryLabel: catalogFallback.categoryLabelBn,
+      image: catalogFallback.image,
+      bannerGradient: catalogFallback.bannerGradient,
+      accentColor: catalogFallback.accentColor,
+      description: catalogFallback.descriptionBn,
+      publisher: catalogFallback.publisher,
+      rating: catalogFallback.rating,
+      deliverySpeed: catalogFallback.deliverySpeed,
+      howToFind: catalogFallback.howToFind,
+      fields: catalogFallback.fields,
+      packages: catalogFallback.packages,
+    };
+  } else if (!game && !catalogFallback) {
+    notFound();
+  }
+
+  // Ensure image exists for DB game
+  if (game && !game.image && catalogFallback) {
+    game.image = catalogFallback.image;
+    game.publisher = catalogFallback.publisher;
+    game.rating = catalogFallback.rating;
+    game.deliverySpeed = catalogFallback.deliverySpeed;
   }
 
   const fields = (Array.isArray(game.fields) ? game.fields : []) as Array<{
@@ -106,79 +117,146 @@ export default async function GameDetailPage({ params }: PageProps) {
     errorMessage?: string;
   }>;
 
-  const packagesSerialized = game.packages.map((p: any) => ({
+  const packagesSerialized = (game.packages || []).map((p: any) => ({
     id: p.id,
     name: p.name,
     amountLabel: p.amountLabel,
     pricePoisha: p.pricePoisha.toString(),
     isPopular: p.isPopular,
-    deliveryTime: p.deliveryTime,
+    deliveryTime: p.deliveryTime || game.deliverySpeed || "১-৫ মিনিট",
   }));
 
   const walletBalancePoisha = session?.user?.walletBalancePoisha
     ? session.user.walletBalancePoisha.toString()
     : "0";
 
-  return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "30px 20px 60px" }}>
-      {/* Breadcrumb */}
-      <div style={{ display: "flex", gap: "8px", alignItems: "center", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "20px" }}>
-        <Link href="/" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>হোম</Link>
-        <span>/</span>
-        <Link href="/games" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>গেমস</Link>
-        <span>/</span>
-        <span style={{ color: "var(--accent-cyan)" }}>{game.name}</span>
-      </div>
+  const gameImage = game.image || `/games/${game.slug}.jpg`;
 
-      {/* Header Banner */}
+  return (
+    <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "30px 20px 80px" }}>
+      {/* Breadcrumb Navigation */}
+      <nav
+        aria-label="Breadcrumb"
+        style={{
+          display: "flex",
+          gap: "8px",
+          alignItems: "center",
+          fontSize: "0.85rem",
+          color: "var(--text-muted)",
+          marginBottom: "24px",
+        }}
+      >
+        <Link href="/" style={{ color: "var(--text-secondary)", textDecoration: "none" }} className="hover:text-cyan-400">
+          হোম
+        </Link>
+        <ChevronRight size={14} />
+        <Link href="/games" style={{ color: "var(--text-secondary)", textDecoration: "none" }} className="hover:text-cyan-400">
+          গেমস ক্যাটালগ
+        </Link>
+        <ChevronRight size={14} />
+        <span style={{ color: "var(--accent-cyan)", fontWeight: 600 }}>{game.name}</span>
+      </nav>
+
+      {/* Hero Game Header Card */}
       <div
         className="glass-card"
         style={{
           padding: "28px",
-          marginBottom: "30px",
+          marginBottom: "32px",
           display: "flex",
-          gap: "24px",
+          gap: "28px",
           alignItems: "center",
           flexWrap: "wrap",
-          background: "linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(7, 10, 18, 0.95))",
-          border: "1px solid var(--border-color)",
+          background:
+            game.bannerGradient ||
+            "linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(7, 10, 18, 0.95))",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        {/* Glow ambient background */}
         <div
           style={{
-            width: "80px",
-            height: "80px",
-            borderRadius: "16px",
-            background: "linear-gradient(135deg, var(--accent-cyan), var(--accent-lime))",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "2.8rem",
-            boxShadow: "0 0 20px rgba(34, 211, 238, 0.3)",
+            position: "absolute",
+            top: "-40px",
+            right: "-40px",
+            width: "240px",
+            height: "240px",
+            background: `radial-gradient(circle, ${game.accentColor || "#22D3EE"}25 0%, transparent 70%)`,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Real Game Artwork Thumbnail */}
+        <div
+          style={{
+            position: "relative",
+            width: "120px",
+            height: "120px",
+            borderRadius: "20px",
+            overflow: "hidden",
+            boxShadow: `0 8px 30px ${game.accentColor || "#22D3EE"}40`,
+            border: `2px solid ${game.accentColor || "#22D3EE"}80`,
+            flexShrink: 0,
           }}
         >
-          🎮
+          <Image
+            src={gameImage}
+            alt={game.name}
+            fill
+            sizes="120px"
+            style={{ objectFit: "cover" }}
+            priority
+          />
         </div>
 
-        <div style={{ flex: 1, minWidth: "260px" }}>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "6px" }}>
-            <h1 style={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>
+        {/* Title, Badges & Meta */}
+        <div style={{ flex: 1, minWidth: "280px", position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", marginBottom: "8px" }}>
+            <h1
+              style={{
+                fontSize: "1.9rem",
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                margin: 0,
+                letterSpacing: "-0.5px",
+              }}
+            >
               {game.name}
             </h1>
-            <span className="badge badge-lime">ইনস্ট্যান্ট</span>
+            <span className="badge badge-lime" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <Zap size={12} /> ইনস্ট্যান্ট ডেলিভারি
+            </span>
+            <span className="badge badge-cyan" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <ShieldCheck size={12} /> ভেরিফাইড
+            </span>
           </div>
+
           {game.nameEn && (
-            <div style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: "10px" }}>
-              {game.nameEn}
+            <div style={{ fontSize: "0.95rem", color: "var(--text-muted)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "12px" }}>
+              <span>{game.nameEn}</span>
+              {game.publisher && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--accent-cyan)", fontSize: "0.8rem" }}>
+                  <Award size={13} /> {game.publisher}
+                </span>
+              )}
+              {game.rating && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#FACC15", fontSize: "0.8rem", fontWeight: 700 }}>
+                  <Star size={13} fill="#FACC15" /> {game.rating}
+                </span>
+              )}
             </div>
           )}
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", margin: 0, lineHeight: 1.5 }}>
+
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.92rem", margin: 0, lineHeight: 1.6, maxWidth: "700px" }}>
             {game.description}
           </p>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "30px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "32px" }}>
         {/* Main Interactive Checkout Component */}
         <GameCheckoutForm
           gameId={game.id}
@@ -191,21 +269,38 @@ export default async function GameDetailPage({ params }: PageProps) {
           savedPlayerIds={savedPlayerIds}
         />
 
-        {/* How to Find UID Instructions */}
+        {/* How to Find UID Instructions Guide */}
         {game.howToFind && (
-          <div className="glass-card" style={{ padding: "24px" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--accent-cyan)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>ℹ️</span> প্লেয়ার আইডি (UID) কিভাবে বের করবেন?
+          <div
+            className="glass-card"
+            style={{
+              padding: "28px",
+              border: "1px solid rgba(34, 211, 238, 0.2)",
+              background: "linear-gradient(135deg, rgba(34, 211, 238, 0.03), rgba(0, 0, 0, 0.4))",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "1.15rem",
+                fontWeight: 700,
+                color: "var(--accent-cyan)",
+                marginBottom: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <Info size={18} /> আইডি বের করার নিয়ম
             </h3>
             <div
               style={{
                 color: "var(--text-secondary)",
-                fontSize: "0.9rem",
+                fontSize: "0.92rem",
                 lineHeight: 1.8,
                 whiteSpace: "pre-line",
-                background: "rgba(0, 0, 0, 0.3)",
-                padding: "16px 20px",
-                borderRadius: "10px",
+                background: "rgba(0, 0, 0, 0.35)",
+                padding: "18px 22px",
+                borderRadius: "12px",
                 border: "1px solid var(--border-color)",
               }}
             >

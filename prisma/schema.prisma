@@ -1,0 +1,664 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+}
+
+enum FulfillmentStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  UDDOKTAPAY
+  MANUAL_BKASH
+  MANUAL_NAGAD
+  MANUAL_ROCKET
+  WALLET
+  ADMIN_ADJUST
+}
+
+enum PaymentPurpose {
+  WALLET_TOPUP
+  ORDER_PAYMENT
+  REFUND
+}
+
+enum WalletTxnType {
+  TOPUP
+  ORDER_PAYMENT
+  REFUND
+  ADMIN_ADJUST
+  CASHBACK
+  REFERRAL
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  ORDER_UPDATE
+  WALLET_CREDIT
+  WALLET_DEBIT
+  SUPPORT_REPLY
+  SYSTEM
+}
+
+enum ManualTopupStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────
+// AUTH TABLES (Auth.js v5 compatible)
+// ─────────────────────────────────────────────
+
+model User {
+  id                 String     @id @default(cuid())
+  name               String?
+  email              String?    @unique
+  phone              String?    @unique
+  emailVerified      DateTime?
+  image              String?
+  passwordHash       String?
+  role               Role       @default(CUSTOMER)
+  status             UserStatus @default(ACTIVE)
+  walletBalancePoisha BigInt    @default(0)
+  twoFactorEnabled   Boolean    @default(false)
+  twoFactorSecret    String?
+  twoFactorRecoveryCodes String[] @default([])
+  referralCode       String?    @unique
+  referredBy         String?
+  loyaltyTier        String     @default("BRONZE")
+  totalSpentPoisha   BigInt     @default(0)
+  banReason          String?
+  bannedAt           DateTime?
+  bannedBy           String?
+  lastLoginAt        DateTime?
+  lastLoginIp        String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Relations
+  accounts           Account[]
+  sessions           Session[]
+  orders             Order[]
+  walletTransactions WalletTransaction[]
+  payments           Payment[]
+  manualTopups       ManualTopup[]
+  notifications      Notification[]
+  supportTickets     SupportTicket[]
+  supportMessages    SupportMessage[]
+  reviews            Review[]
+  auditLogs          AuditLog[]          @relation("AuditUser")
+  auditLogsAdmin     AuditLog[]          @relation("AuditAdmin")
+  savedPlayerIds     SavedPlayerId[]
+  couponRedemptions  CouponRedemption[]
+  referrals          Referral[]          @relation("ReferralUser")
+  referralsMade      Referral[]          @relation("ReferralReferrer")
+  assignedOrders     Order[]             @relation("AssignedOrders")
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─────────────────────────────────────────────
+// CATALOG
+// ─────────────────────────────────────────────
+
+model Game {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  nameEn      String?
+  logo        String?
+  banner      String?
+  category    String   @default("mobile")
+  description String?  @db.Text
+  howToFind   String?  @db.Text  // How to find UID
+  fields      Json     @default("[]") // GameField definitions
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  isPopular   Boolean  @default(false)
+  sort        Int      @default(0)
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  packages    Package[]
+  orders      Order[]
+
+  @@index([slug])
+  @@index([isActive, sort])
+  @@index([category])
+  @@map("games")
+}
+
+model Package {
+  id            String   @id @default(cuid())
+  gameId        String
+  name          String
+  nameEn        String?
+  amountLabel   String   // e.g. "100 Diamonds"
+  description   String?
+  pricePoisha   BigInt   // Sell price in poisha
+  costPoisha    BigInt   @default(0) // Cost price in poisha
+  supplierSku   String?  // Supplier reference
+  stock         Int      @default(-1) // -1 = unlimited
+  isActive      Boolean  @default(true)
+  isPopular     Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
+  sort          Int      @default(0)
+  deliveryTime  String?  // e.g. "5-10 minutes"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  game          Game     @relation(fields: [gameId], references: [id])
+  orders        Order[]
+  orderEvents   OrderEvent[]
+
+  @@index([gameId, isActive])
+  @@index([gameId, sort])
+  @@map("packages")
+}
+
+model SavedPlayerId {
+  id           String   @id @default(cuid())
+  userId       String
+  gameId       String
+  label        String?  // e.g. "Main Account"
+  playerFields Json     // { uid: "123", zoneId: "456" }
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, gameId])
+  @@map("saved_player_ids")
+}
+
+// ─────────────────────────────────────────────
+// ORDERS
+// ─────────────────────────────────────────────
+
+model Order {
+  id                String            @id @default(cuid())
+  code              String            @unique // Human-readable order code e.g. TC-20241201-XXXX
+  userId            String
+  gameId            String
+  packageId         String
+  playerFields      Json              // { uid, zoneId, etc. }
+  packageSnapshot   Json              // Snapshot of package at time of order
+  gameSnapshot      Json              // Snapshot of game at time of order
+  pricePoisha       BigInt
+  costPoisha        BigInt            @default(0)
+  couponId          String?
+  discountPoisha    BigInt            @default(0)
+  finalPricePoisha  BigInt            // pricePoisha - discountPoisha
+  status            OrderStatus       @default(PENDING_PAYMENT)
+  fulfillmentStatus FulfillmentStatus @default(PENDING)
+  paymentMethod     String?           // WALLET, UDDOKTAPAY, etc.
+  assignedToId      String?
+  claimedAt         DateTime?
+  completedAt       DateTime?
+  failedAt          DateTime?
+  refundedAt        DateTime?
+  proofUrl          String?           // Fulfillment proof screenshot
+  adminNotes        String?
+  customerNote      String?
+  isGift            Boolean           @default(false)
+  giftRecipient     String?
+  giftMessage       String?
+  version           Int               @default(0) // Optimistic lock
+  expiresAt         DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id])
+  game              Game              @relation(fields: [gameId], references: [id])
+  package           Package           @relation(fields: [packageId], references: [id])
+  assignedTo        User?             @relation("AssignedOrders", fields: [assignedToId], references: [id])
+  coupon            Coupon?           @relation(fields: [couponId], references: [id])
+  events            OrderEvent[]
+  payments          Payment[]
+  walletTransactions WalletTransaction[]
+
+  @@index([userId])
+  @@index([status, createdAt])
+  @@index([code])
+  @@index([assignedToId])
+  @@index([expiresAt, status])
+  @@map("orders")
+}
+
+model OrderEvent {
+  id          String      @id @default(cuid())
+  orderId     String
+  packageId   String?
+  type        String      // STATUS_CHANGE, ASSIGNED, PROOF_UPLOADED, NOTE_ADDED, etc.
+  fromStatus  String?
+  toStatus    String?
+  note        String?
+  metadata    Json?
+  createdBy   String?     // userId of who made the change
+  createdAt   DateTime    @default(now())
+
+  order       Order       @relation(fields: [orderId], references: [id])
+  package     Package?    @relation(fields: [packageId], references: [id])
+
+  @@index([orderId])
+  @@map("order_events")
+}
+
+// ─────────────────────────────────────────────
+// PAYMENTS
+// ─────────────────────────────────────────────
+
+model Payment {
+  id              String          @id @default(cuid())
+  userId          String
+  orderId         String?
+  provider        PaymentProvider
+  purpose         PaymentPurpose
+  invoiceId       String?         @unique // UddoktaPay invoice ID
+  transactionId   String?         // Gateway transaction ID
+  method          String?         // bKash, Nagad, Card, etc.
+  senderNumber    String?
+  amountPoisha    BigInt
+  feePoisha       BigInt          @default(0)
+  chargedPoisha   BigInt          // What customer was charged
+  status          PaymentStatus   @default(INITIATED)
+  rawPayload      Json?
+  verifiedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  user            User            @relation(fields: [userId], references: [id])
+  order           Order?          @relation(fields: [orderId], references: [id])
+  walletTransaction WalletTransaction?
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([invoiceId])
+  @@index([status])
+  @@map("payments")
+}
+
+model ManualTopup {
+  id            String            @id @default(cuid())
+  userId        String
+  provider      String            // BKASH, NAGAD, ROCKET
+  senderNumber  String
+  trxId         String
+  amountPoisha  BigInt
+  screenshotUrl String?
+  status        ManualTopupStatus @default(PENDING)
+  adminNote     String?
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  user          User              @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("manual_topups")
+}
+
+// ─────────────────────────────────────────────
+// WALLET
+// ─────────────────────────────────────────────
+
+model WalletTransaction {
+  id                 String        @id @default(cuid())
+  userId             String
+  orderId            String?
+  paymentId          String?       @unique
+  type               WalletTxnType
+  amountPoisha       BigInt
+  balanceAfterPoisha BigInt
+  idempotencyKey     String        @unique
+  note               String?
+  referenceType      String?       // ORDER, PAYMENT, ADMIN_ADJUST, etc.
+  referenceId        String?
+  createdAt          DateTime      @default(now())
+
+  user               User          @relation(fields: [userId], references: [id])
+  order              Order?        @relation(fields: [orderId], references: [id])
+  payment            Payment?      @relation(fields: [paymentId], references: [id])
+
+  @@index([userId])
+  @@index([orderId])
+  @@map("wallet_transactions")
+}
+
+// ─────────────────────────────────────────────
+// MARKETING
+// ─────────────────────────────────────────────
+
+model Coupon {
+  id                String    @id @default(cuid())
+  code              String    @unique
+  description       String?
+  discountType      String    @default("PERCENT") // PERCENT or FIXED
+  discountValue     BigInt    // Percent or poisha
+  minOrderPoisha    BigInt    @default(0)
+  maxDiscountPoisha BigInt?
+  maxUses           Int?
+  usedCount         Int       @default(0)
+  isActive          Boolean   @default(true)
+  validFrom         DateTime  @default(now())
+  validUntil        DateTime?
+  applicableGameIds String[]  @default([])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  orders            Order[]
+  redemptions       CouponRedemption[]
+
+  @@index([code])
+  @@index([isActive])
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  couponId  String
+  userId    String
+  orderId   String?
+  createdAt DateTime @default(now())
+
+  coupon    Coupon   @relation(fields: [couponId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([couponId, userId])
+  @@map("coupon_redemptions")
+}
+
+model Referral {
+  id           String   @id @default(cuid())
+  userId       String   // who was referred
+  referrerId   String   // who referred them
+  bonusPoisha  BigInt   @default(0)
+  status       String   @default("PENDING") // PENDING, REWARDED
+  createdAt    DateTime @default(now())
+
+  user         User     @relation("ReferralUser", fields: [userId], references: [id])
+  referrer     User     @relation("ReferralReferrer", fields: [referrerId], references: [id])
+
+  @@index([userId])
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  title     String?
+  imageUrl  String
+  linkUrl   String?
+  sort      Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("banners")
+}
+
+// ─────────────────────────────────────────────
+// SUPPORT
+// ─────────────────────────────────────────────
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  userId      String
+  orderId     String?
+  subject     String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  assignedTo  String?
+  resolvedAt  DateTime?
+  closedAt    DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user        User           @relation(fields: [userId], references: [id])
+  messages    SupportMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id         String   @id @default(cuid())
+  ticketId   String
+  userId     String
+  body       String   @db.Text
+  isInternal Boolean  @default(false) // Admin-only notes
+  aiGenerated Boolean @default(false)
+  createdAt  DateTime @default(now())
+
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  userId      String
+  gameId      String?
+  orderId     String?
+  rating      Int      // 1-5
+  body        String?  @db.Text
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([gameId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+// ─────────────────────────────────────────────
+// OPS / SYSTEM
+// ─────────────────────────────────────────────
+
+model Job {
+  id          String    @id @default(cuid())
+  type        String    // EXPIRE_ORDER, RECONCILE_PAYMENT, SEND_EMAIL, etc.
+  payload     Json
+  status      JobStatus @default(PENDING)
+  priority    Int       @default(5)
+  runAt       DateTime  @default(now())
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  lockedAt    DateTime?
+  lockedBy    String?
+  error       String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, runAt])
+  @@index([type, status])
+  @@map("jobs")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?  // Who was affected
+  adminId     String?  // Who performed the action
+  action      String   // e.g. USER_BANNED, ORDER_COMPLETED, WALLET_ADJUST
+  resource    String?  // e.g. "User", "Order", "Payment"
+  resourceId  String?
+  before      Json?
+  after       Json?
+  ip          String?
+  userAgent   String?
+  note        String?
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation("AuditUser", fields: [userId], references: [id])
+  admin       User?    @relation("AuditAdmin", fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model AiUsageLog {
+  id         String   @id @default(cuid())
+  provider   String   // gemini, grok
+  keyIndex   Int
+  model      String
+  feature    String   // ocr, chat, summary, etc.
+  tokens     Int?
+  latencyMs  Int?
+  status     String   // success, error, timeout
+  error      String?
+  userId     String?
+  createdAt  DateTime @default(now())
+
+  @@index([provider, createdAt])
+  @@index([feature])
+  @@map("ai_usage_logs")
+}

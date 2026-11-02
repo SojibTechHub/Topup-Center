@@ -325,3 +325,4 @@ export function AdminCouponsManager({ initialCoupons }: AdminCouponsManagerProps
     </div>
   );
 }
+

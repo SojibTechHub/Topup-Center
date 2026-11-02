@@ -591,3 +591,4 @@ export function AdminPackagesManager({ initialPackages, games, selectedGameId }:
     </div>
   );
 }
+

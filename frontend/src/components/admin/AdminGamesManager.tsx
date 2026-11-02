@@ -442,3 +442,4 @@ export function AdminGamesManager({ initialGames }: AdminGamesManagerProps) {
     </div>
   );
 }
+

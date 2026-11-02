@@ -1,16 +1,21 @@
 services:
-  # ─── Topup Center Background Worker ──────────────────────────────────────────
-  - type: worker
-    name: topup-center-worker
+  # ─── Topup Center REST API (Express) ─────────────────────────────────────────
+  - type: web
+    name: topup-center-api
     runtime: node
     region: singapore
     plan: starter
-    buildCommand: npm ci && npx prisma generate && npm run build:worker
-    startCommand: node dist/worker/index.js
+    rootDir: backend
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: node dist/server.js
     autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
       - key: DATABASE_URL
         sync: false
       - key: DIRECT_URL
@@ -51,3 +56,35 @@ services:
         value: grok-4
       - key: AI_PRIMARY
         value: gemini
+
+  # ─── Topup Center Background Worker ──────────────────────────────────────────
+  - type: worker
+    name: topup-center-worker
+    runtime: node
+    region: singapore
+    plan: starter
+    rootDir: backend
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: node dist/worker/index.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_ADMIN_CHAT_ID
+        sync: false
+      - key: UDDOKTAPAY_BASE_URL
+        value: https://sandbox.uddoktapay.com
+      - key: UDDOKTAPAY_API_KEY
+        sync: false

@@ -1,18 +1,52 @@
 # ⚡ Topup Center — Game Top-Up Marketplace
 
-> **Production-Ready Full-Stack Game Top-Up Marketplace for Bangladesh**  
-> Built with Next.js 15 App Router, PostgreSQL + Prisma, Auth.js v5, UddoktaPay, Neon, Upstash Redis, Resend, Telegram Bot, Gemini & Grok Multi-Key Pool, and Render Background Worker.
+> **Production-Ready Decoupled Architecture Game Top-Up Marketplace for Bangladesh**  
+> Built with Next.js 15 App Router (Frontend) + Express.js & TypeScript (Backend) + PostgreSQL & Prisma + UddoktaPay, Neon, Upstash Redis, Resend, Telegram Bot, Gemini & Grok Multi-Key Pool, and Render Background Worker.
+
+---
+
+## 🏗️ Architecture & Monorepo Structure
+
+```
+Topup-Center/
+├── backend/                  # REST API & Database & Background Worker (Port 5000)
+│   ├── prisma/               # Database schema & seed scripts
+│   ├── src/
+│   │   ├── routes/           # Auth, Catalog, Orders, Wallet, Admin, Payments, AI, Support, Cron
+│   │   ├── services/         # Order, Payment, and Wallet domain services
+│   │   ├── middleware/       # JWT authentication & RBAC role guards
+│   │   ├── worker/           # Standalone background worker (order expiry, reconciliation, email)
+│   │   ├── lib/              # Database (Prisma), Redis, UddoktaPay, Telegram, Mail, AI pool
+│   │   ├── app.ts            # Express app configuration (CORS, cookies, JSON parser)
+│   │   └── server.ts         # Express HTTP listener
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend/                 # Customer Storefront & Admin Mission Control (Port 3000)
+│   ├── public/               # Game cover artwork, payment badges (bKash, Nagad, Rocket)
+│   ├── src/
+│   │   ├── app/              # Next.js 15 App Router (Storefront, Customer Portal, Admin Panel)
+│   │   ├── components/       # Neon Bazaar glassmorphism UI components
+│   │   └── lib/              # API proxy client, JWT auth helpers, money formatter
+│   ├── next.config.ts        # Transparent proxy rewrites `/api/*` -> Backend
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── tests/                    # Vitest unit test suite (Money rules, state machine, idempotency)
+├── package.json              # Monorepo workspaces coordinator
+└── render.yaml               # Cloud deployment blueprint (Web API + Worker)
+```
 
 ---
 
 ## 🎮 Key Features
 
 ### Customer
-- **Authentication**: Email/phone registration, Argon2id hashing, email verification (Resend), forgot/reset password, optional Google OAuth.
-- **Game Catalog**: Browse Free Fire, PUBG Mobile UC, Mobile Legends, Clash of Clans, DLS, Roblox, Steam Wallet, and Google Play Gift Cards.
+- **Authentication**: Email/phone registration, Argon2id/bcrypt hashing, email verification, forgot/reset password.
+- **Game Catalog**: Free Fire, PUBG Mobile UC, Mobile Legends, Clash of Clans, DLS, Roblox, Steam Wallet, Google Play.
 - **Top-up Flow**: Dynamic player ID fields with live regex validation, saved player IDs, coupon discounts (`WELCOME50`, `HOT10`).
 - **Wallet System**: 1-click checkout with wallet balance, instant top-up via UddoktaPay, and manual bKash/Nagad/Rocket TrxID fallback with AI screenshot auto-fill.
-- **Order Tracking**: Live visual timeline (`PENDING_PAYMENT` → `PAID` → `PROCESSING` → `COMPLETED` / `REFUNDED`), delivery proof view, and support ticket creation.
+- **Order Tracking**: Live visual timeline (`PENDING_PAYMENT` → `PAID` → `PROCESSING` → `COMPLETED` / `REFUNDED`), delivery proof view, support ticket creation.
 - **Theme**: "Neon Bazaar" dark gaming vault UI (`#070A12` with electric cyan `#22D3EE` & lime `#A3E635`), Bangla-first language, mobile-first PWA.
 
 ### Admin Mission Control (`/admin`)
@@ -25,32 +59,16 @@
 
 ---
 
-## 🛠️ Tech Stack & Architecture
-
-- **Web Application**: Next.js 15 (App Router), React 19, Tailwind CSS v4, Lucide Icons.
-- **Database**: Neon Serverless PostgreSQL with Prisma ORM.
-- **Background Worker**: Dedicated standalone process polling the `Job` table with `FOR UPDATE SKIP LOCKED`.
-- **Cache & Rate Limiting**: Upstash Redis (sliding window rate limits + AI key cooldowns).
-- **Payment Gateway**: UddoktaPay (bKash, Nagad, Rocket, Cards) + Manual TrxID.
-- **Email & Alerts**: Resend (transactional emails) + Telegram Bot (admin notifications).
-- **AI Key Pool**: 4 Gemini + 4 Grok API keys with automatic round-robin & 429/5xx failover.
-
----
-
 ## 🚀 Quick Start Guide
 
-### 1. Clone & Install
+### 1. Install Dependencies
 ```bash
-cd c:\projects\Topup-Center
 npm install
 ```
 
 ### 2. Configure Environment Variables
-Copy `.env.example` to `.env.local`:
-```bash
-cp .env.example .env.local
-```
-Fill in your database URL (Neon), Redis credentials (Upstash), Auth secret, UddoktaPay key, and AI keys.
+- Backend: Copy `backend/.env.example` to `backend/.env`
+- Frontend: Copy `frontend/.env.example` to `frontend/.env.local`
 
 ### 3. Initialize Database & Seed
 ```bash
@@ -63,12 +81,15 @@ npm run db:seed
 
 ### 4. Run Development Servers
 ```bash
-# Terminal 1: Next.js Web App
+# Run both Backend (Port 5000) and Frontend (Port 3000) concurrently:
 npm run dev
 
-# Terminal 2: Render Background Worker
-npm run worker:dev
+# Or run separately:
+npm run dev:backend    # Backend on http://localhost:5000
+npm run dev:frontend   # Frontend on http://localhost:3000
+npm run worker:dev     # Background worker
 ```
+
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
@@ -85,22 +106,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 🧪 Testing & Verification
 
 ```bash
-# Run unit test suite (Money rules, state machine, webhook idempotency)
-npm run test
+# Run unit test suite
+npm test
 
-# Run TypeScript typecheck across entire codebase
+# Run TypeScript typecheck across entire monorepo
 npm run typecheck
 
-# Run linter
-npm run lint
-
-# Build standalone background worker bundle
-npm run build:worker
+# Build both backend and frontend for production
+npm run build
 ```
-
----
-
-## 📚 Documentation
-- [System Architecture](docs/architecture.md)
-- [Production Deployment Guide](docs/deployment.md)
-- [Operational Runbook](docs/runbook.md)

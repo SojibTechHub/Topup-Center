@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="apbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181B" />
+      <stop offset="50%" stop-color="#27272A" />
+      <stop offset="100%" stop-color="#09090B" />
+    </linearGradient>
+    <linearGradient id="apgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#F472B6" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#apbg)" />
+  <circle cx="300" cy="330" r="180" fill="#818CF8" opacity="0.15" filter="blur(40px)" />
+  <!-- Apple Logo with Rainbow Gradient -->
+  <g transform="translate(300, 310) scale(1.4)">
+    <path d="M15.2,-78 C21.4,-85.7 30.6,-90.4 40.1,-89.9 C41.4,-80.4 36.6,-71.1 30.5,-63.5 C24.4,-55.8 15.3,-50.9 5.8,-51.4 C4.6,-60.9 9.1,-70.2 15.2,-78 Z" fill="url(#apgrad)" />
+    <path d="M36.7,-38 C53.4,-38 67.5,-48.5 77.2,-48.5 C87,-48.5 99,-39 113.3,-39 C128.4,-39 142.3,-45 150,-56.3 C118.8,-73.4 124,-118.4 154.5,-130.4 C146,-142.5 132.8,-149.2 118.4,-149.2 C99,-149.2 88.5,-138.8 74.3,-138.8 C60.1,-138.8 45.4,-149.6 30,-149.6 C10,-149.6 -9.6,-133.4 -20.6,-115.1 C-42.5,-77.8 -27.5,-23.4 1.2,21.6 C14.9,43.2 30.5,66.8 48.6,66.1 C65.6,65.4 72.1,55.1 92.5,55.1 C112.9,55.1 118.8,66.1 136.4,65.4 C154.9,64.7 169,-16.9 181.7,-38.5 C167.3,-45.5 155.6,-57.2 155.6,-74.6" transform="translate(-65, 40) scale(0.7)" fill="url(#apgrad)" />
+  </g>
+  <text x="300" y="550" font-family="'Space Grotesk', system-ui, sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">APPLE GIFT CARD</text>
+  <text x="300" y="600" font-family="'Space Grotesk', system-ui, sans-serif" font-size="26" font-weight="700" fill="#A1A1AA" text-anchor="middle" letter-spacing="5">APP STORE &amp; ITUNES</text>
+  <rect x="220" y="640" width="160" height="38" rx="19" fill="url(#apgrad)" />
+  <text x="300" y="665" font-family="'Hind Siliguri', sans-serif" font-size="16" font-weight="700" fill="#070A12" text-anchor="middle">ইনস্ট্যান্ট ইউএস কোড</text>
+</svg>

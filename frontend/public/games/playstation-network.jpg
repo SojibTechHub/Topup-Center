@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="psbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001F54" />
+      <stop offset="50%" stop-color="#0A1128" />
+      <stop offset="100%" stop-color="#03071E" />
+    </linearGradient>
+    <linearGradient id="psblue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#006FCD" />
+      <stop offset="100%" stop-color="#00439C" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#psbg)" />
+  <circle cx="300" cy="330" r="180" fill="#006FCD" opacity="0.2" filter="blur(45px)" />
+  <!-- PlayStation 4 Shapes (Triangle, Circle, Cross, Square) -->
+  <g transform="translate(300, 310) scale(1.1)">
+    <!-- Triangle (Green) -->
+    <polygon points="-60,-70 -30,-120 0,-70" fill="none" stroke="#00F0FF" stroke-width="8" stroke-linejoin="round" />
+    <!-- Circle (Red) -->
+    <circle cx="60" cy="-95" r="26" fill="none" stroke="#FF4655" stroke-width="8" />
+    <!-- Cross (Blue) -->
+    <g transform="translate(-45, 0)">
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#0070D1" stroke-width="8" stroke-linecap="round" />
+      <line x1="20" y1="-20" x2="-20" y2="20" stroke="#0070D1" stroke-width="8" stroke-linecap="round" />
+    </g>
+    <!-- Square (Pink) -->
+    <rect x="35" y="-20" width="40" height="40" rx="6" fill="none" stroke="#F472B6" stroke-width="8" />
+  </g>
+  <text x="300" y="550" font-family="'Space Grotesk', system-ui, sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">PLAYSTATION</text>
+  <text x="300" y="600" font-family="'Space Grotesk', system-ui, sans-serif" font-size="28" font-weight="800" fill="#00A3FF" text-anchor="middle" letter-spacing="6">PSN CARD (US)</text>
+  <rect x="220" y="640" width="160" height="38" rx="19" fill="url(#psblue)" />
+  <text x="300" y="665" font-family="'Hind Siliguri', sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">ডিজিটাল ভাউচার কোড</text>
+</svg>

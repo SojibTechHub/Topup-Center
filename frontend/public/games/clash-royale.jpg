@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="crbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B132B" />
+      <stop offset="50%" stop-color="#1C2541" />
+      <stop offset="100%" stop-color="#070A12" />
+    </linearGradient>
+    <linearGradient id="crcrown" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <linearGradient id="crblue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#crbg)" />
+  <circle cx="300" cy="330" r="180" fill="#F59E0B" opacity="0.15" filter="blur(40px)" />
+  <!-- King's Crown Emblem -->
+  <g transform="translate(300, 320) scale(1.3)">
+    <polygon points="-70,30 -60,-40 -20,-10 0,-60 20,-10 60,-40 70,30" fill="url(#crcrown)" stroke="#000000" stroke-width="6" />
+    <circle cx="-60" cy="-45" r="9" fill="#EF4444" stroke="#000000" stroke-width="3" />
+    <circle cx="0" cy="-65" r="11" fill="#3B82F6" stroke="#000000" stroke-width="3" />
+    <circle cx="60" cy="-45" r="9" fill="#10B981" stroke="#000000" stroke-width="3" />
+    <rect x="-65" y="30" width="130" height="25" rx="5" fill="#B45309" stroke="#000000" stroke-width="4" />
+  </g>
+  <text x="300" y="550" font-family="'Space Grotesk', system-ui, sans-serif" font-size="48" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">CLASH ROYALE</text>
+  <text x="300" y="600" font-family="'Space Grotesk', system-ui, sans-serif" font-size="28" font-weight="800" fill="#FBBF24" text-anchor="middle" letter-spacing="5">GEMS &amp; PASS ROYALE</text>
+  <rect x="220" y="640" width="160" height="38" rx="19" fill="url(#crblue)" />
+  <text x="300" y="665" font-family="'Hind Siliguri', sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">সুপারসেল প্লেয়ার ট্যাগ</text>
+</svg>

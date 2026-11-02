@@ -4,6 +4,67 @@ import { getAllCatalogGames, getCatalogGame, normalizeSlug } from "@/lib/catalog
 
 const router = Router();
 
+// GET /api/settings/public
+router.get("/settings/public", async (_req: Request, res: Response) => {
+  try {
+    const raw = await db.setting.findMany();
+    const map: Record<string, any> = {};
+    raw.forEach((s) => {
+      map[s.key] = s.value;
+    });
+
+    return res.json({
+      success: true,
+      settings: {
+        site_name: map.site_name || { bn: "টপআপ সেন্টার", en: "Topup Center" },
+        site_tagline: map.site_tagline || "বাংলাদেশের সবচেয়ে দ্রুত ও নির্ভরযোগ্য গেম টপআপ প্ল্যাটফর্ম",
+        maintenance_mode: map.maintenance_mode || false,
+        notice_ticker: map.notice_ticker || {
+          text: "⚡ ফ্রি ফায়ার ও পাবজি ইউসি ১০০% অটো ইনস্ট্যান্ট ডেলিভারি চালু আছে! বিকাশ, নগদ, রকেটে পেমেন্ট করুন | ২৪/৭ লাইভ সাপোর্ট",
+          active: true,
+        },
+        support_contacts: map.support_contacts || {
+          whatsapp: "+8801812345678",
+          telegram: "topupcenter_support",
+          email: "support@topupcenter.com",
+          phone: "+8801812345678",
+        },
+        manual_payment_numbers: map.manual_payment_numbers || {
+          bkash: "01812345678 (Personal / Send Money)",
+          nagad: "01912345678 (Personal / Send Money)",
+          rocket: "017123456789 (Personal / Send Money)",
+          instruction: "টাকা সেন্ড মানি করার পর নিচে সঠিক TrxID এবং প্রেরকের মোবাইল নম্বর দিন।",
+        },
+      },
+    });
+  } catch (error) {
+    return res.json({
+      success: true,
+      settings: {
+        site_name: { bn: "টপআপ সেন্টার", en: "Topup Center" },
+        site_tagline: "বাংলাদেশের সবচেয়ে দ্রুত ও নির্ভরযোগ্য গেম টপআপ প্ল্যাটফর্ম",
+        maintenance_mode: false,
+        notice_ticker: {
+          text: "⚡ ফ্রি ফায়ার ও পাবজি ইউসি ১০০% অটো ইনস্ট্যান্ট ডেলিভারি চালু আছে! বিকাশ, নগদ, রকেটে পেমেন্ট করুন | ২৪/৭ লাইভ সাপোর্ট",
+          active: true,
+        },
+        support_contacts: {
+          whatsapp: "+8801812345678",
+          telegram: "topupcenter_support",
+          email: "support@topupcenter.com",
+          phone: "+8801812345678",
+        },
+        manual_payment_numbers: {
+          bkash: "01812345678 (Personal / Send Money)",
+          nagad: "01912345678 (Personal / Send Money)",
+          rocket: "017123456789 (Personal / Send Money)",
+          instruction: "টাকা সেন্ড মানি করার পর নিচে সঠিক TrxID এবং প্রেরকের মোবাইল নম্বর দিন।",
+        },
+      },
+    });
+  }
+});
+
 // GET /api/games
 router.get("/games", async (req: Request, res: Response) => {
   const { category, q } = req.query as { category?: string; q?: string };
@@ -39,12 +100,12 @@ router.get("/games", async (req: Request, res: Response) => {
         name: g.name,
         nameEn: g.nameEn,
         category: g.category,
-        image: `/games/${g.slug}.jpg`,
+        image: g.logo || `/games/${g.slug}.jpg`,
         tags: g.tags,
         isPopular: g.isPopular,
         isFeatured: g.isFeatured,
-        minPricePoisha: g.packages[0] ? g.packages[0].pricePoisha.toString() : "2500",
-        minPrice: g.packages[0] ? Number(g.packages[0].pricePoisha) / 100 : 25,
+        minPricePoisha: g.packages[0] ? g.packages[0].pricePoisha.toString() : "2000",
+        minPrice: g.packages[0] ? Number(g.packages[0].pricePoisha) / 100 : 20,
       }));
       return res.json({ success: true, games: serialized });
     }
@@ -52,7 +113,7 @@ router.get("/games", async (req: Request, res: Response) => {
     console.warn("DB catalog query failed, falling back to static catalog:", error);
   }
 
-  // Fallback
+  // Fallback to static catalog
   let games = getAllCatalogGames().map((g) => ({
     id: g.id,
     slug: g.slug,
@@ -63,8 +124,8 @@ router.get("/games", async (req: Request, res: Response) => {
     tags: g.tags,
     isPopular: g.isPopular,
     isFeatured: g.isFeatured,
-    minPrice: g.packages[0] ? Number(g.packages[0].pricePoisha) / 100 : 25,
-    minPricePoisha: g.packages[0] ? g.packages[0].pricePoisha.toString() : "2500",
+    minPrice: g.packages[0] ? Number(g.packages[0].pricePoisha) / 100 : 20,
+    minPricePoisha: g.packages[0] ? g.packages[0].pricePoisha.toString() : "2000",
     deliverySpeed: g.deliverySpeed,
   }));
 
@@ -100,7 +161,7 @@ router.get("/games/:slug", async (req: Request, res: Response) => {
     if (game) {
       const serialized = {
         ...game,
-        image: `/games/${game.slug}.jpg`,
+        image: game.logo || `/games/${game.slug}.jpg`,
         packages: game.packages.map((p) => ({
           ...p,
           pricePoisha: p.pricePoisha.toString(),
@@ -172,4 +233,3 @@ router.get("/packages", async (req: Request, res: Response) => {
 });
 
 export default router;
-

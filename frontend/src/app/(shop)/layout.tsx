@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { NoticeMarquee } from "@/components/layout/NoticeMarquee";
+import { WhatsAppFloatingButton } from "@/components/layout/WhatsAppFloatingButton";
+import { LiveDeliveryTicker } from "@/components/layout/LiveDeliveryTicker";
+import { ShieldCheck, Zap, HelpCircle, FileText, Phone, Settings } from "lucide-react";
 
 export default async function ShopLayout({
   children,
@@ -7,17 +11,24 @@ export default async function ShopLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const isAdminOrStaff =
+    session?.user?.role === "ADMIN" ||
+    session?.user?.role === "SUPER_ADMIN" ||
+    session?.user?.role === "STAFF";
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)" }}>
+      {/* Top Notice Marquee Banner */}
+      <NoticeMarquee />
+
       {/* Header */}
       <header
         style={{
           position: "sticky",
           top: 0,
           zIndex: 40,
-          background: "rgba(7, 10, 18, 0.85)",
-          backdropFilter: "blur(12px)",
+          background: "rgba(7, 10, 18, 0.88)",
+          backdropFilter: "blur(14px)",
           borderBottom: "1px solid var(--border-color)",
         }}
       >
@@ -43,8 +54,8 @@ export default async function ShopLayout({
           >
             <div
               style={{
-                width: "36px",
-                height: "36px",
+                width: "38px",
+                height: "38px",
                 borderRadius: "10px",
                 background: "linear-gradient(135deg, var(--accent-cyan), var(--accent-lime))",
                 display: "flex",
@@ -52,7 +63,8 @@ export default async function ShopLayout({
                 justifyContent: "center",
                 fontWeight: 900,
                 color: "#070A12",
-                fontSize: "1.1rem",
+                fontSize: "1.2rem",
+                boxShadow: "0 0 16px rgba(34, 211, 238, 0.4)",
               }}
             >
               ⚡
@@ -60,8 +72,8 @@ export default async function ShopLayout({
             <div>
               <span
                 style={{
-                  fontSize: "1.25rem",
-                  fontWeight: 800,
+                  fontSize: "1.3rem",
+                  fontWeight: 900,
                   fontFamily: "'Space Grotesk', sans-serif",
                   background: "linear-gradient(135deg, #22D3EE, #F8FAFC)",
                   WebkitBackgroundClip: "text",
@@ -86,7 +98,7 @@ export default async function ShopLayout({
           </Link>
 
           {/* Nav links */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "24px" }} className="hidden-mobile">
+          <nav style={{ display: "flex", alignItems: "center", gap: "22px" }} className="hidden-mobile">
             <Link
               href="/"
               style={{
@@ -108,6 +120,21 @@ export default async function ShopLayout({
               }}
             >
               সব গেম
+            </Link>
+            <Link
+              href="/price-list"
+              style={{
+                color: "var(--accent-lime)",
+                textDecoration: "none",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <span>⚡</span>
+              <span>প্রাইস লিস্ট</span>
             </Link>
             <Link
               href="/wallet"
@@ -133,8 +160,26 @@ export default async function ShopLayout({
 
           {/* Right Action */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {isAdminOrStaff && (
+              <Link
+                href="/admin"
+                className="btn btn-primary"
+                style={{
+                  padding: "6px 14px",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  textDecoration: "none",
+                }}
+              >
+                <Settings style={{ width: "15px", height: "15px" }} />
+                <span>অ্যাডমিন প্যানেল</span>
+              </Link>
+            )}
+
             {session?.user ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <Link
                   href="/wallet"
                   className="badge badge-cyan"
@@ -178,12 +223,16 @@ export default async function ShopLayout({
       {/* Main Content */}
       <main style={{ flex: 1 }}>{children}</main>
 
+      {/* Floating Elements */}
+      <LiveDeliveryTicker />
+      <WhatsAppFloatingButton />
+
       {/* Footer */}
       <footer
         style={{
           borderTop: "1px solid var(--border-color)",
           background: "#05070D",
-          padding: "40px 20px 24px",
+          padding: "48px 20px 28px",
           marginTop: "60px",
         }}
       >
@@ -193,50 +242,90 @@ export default async function ShopLayout({
             margin: "0 auto",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "30px",
-            marginBottom: "30px",
+            gap: "36px",
+            marginBottom: "36px",
           }}
         >
+          {/* Brand Col */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-              <span style={{ fontSize: "1.2rem" }}>⚡</span>
-              <span style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--text-primary)" }}>Topup Center</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+              <span style={{ fontSize: "1.4rem" }}>⚡</span>
+              <strong style={{ fontSize: "1.2rem", color: "var(--text-primary)" }}>Topup Center</strong>
             </div>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: 1.6 }}>
-              বাংলাদেশের সবচেয়ে দ্রুত ও বিশ্বস্ত গেম টপআপ মার্কেটপ্লেস। ২৪/৭ অটোমেটেড ডেলিভারি এবং সার্বক্ষণিক কাস্টমার কেয়ার।
+            <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "16px" }}>
+              বাংলাদেশের ১ নম্বর নির্ভরযোগ্য ও দ্রুততম গেম টপআপ মার্কেটপ্লেস। বিকাশ, নগদ, রকেটে অটোমেটিক ইনস্ট্যান্ট পেমেন্ট ও ২৪/৭ লাইভ সাপোর্ট।
             </p>
-          </div>
-
-          <div>
-            <h4 style={{ color: "var(--text-primary)", fontSize: "0.95rem", marginBottom: "14px" }}>জনপ্রিয় গেম</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem" }}>
-              <Link href="/games/free-fire" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Free Fire Diamonds</Link>
-              <Link href="/games/pubg-mobile" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>PUBG Mobile UC</Link>
-              <Link href="/games/mobile-legends" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Mobile Legends</Link>
-              <Link href="/games/clash-of-clans" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Clash of Clans Gems</Link>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              <span className="badge badge-lime">100% Safe</span>
+              <span className="badge badge-cyan">Instant Topup</span>
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h4 style={{ color: "var(--text-primary)", fontSize: "0.95rem", marginBottom: "14px" }}>গ্রাহক সেবা ও নীতি</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem" }}>
-              <Link href="/faq" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>সচরাচর জিজ্ঞাসা (FAQ)</Link>
-              <Link href="/terms" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>শর্তাবলী (Terms)</Link>
-              <Link href="/privacy" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>গোপনীয়তা নীতি (Privacy)</Link>
-              <Link href="/refund" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>রিফান্ড পলিসি (Refund)</Link>
-            </div>
+            <h4 style={{ color: "var(--text-primary)", fontSize: "1rem", marginBottom: "14px", fontWeight: 700 }}>
+              দ্রুত লিঙ্কসমূহ
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+              <li>
+                <Link href="/games" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  🎮 সকল গেম তালিকা
+                </Link>
+              </li>
+              <li>
+                <Link href="/price-list" style={{ color: "var(--accent-lime)", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>
+                  ⚡ অফিসিয়াল প্রাইস লিস্ট
+                </Link>
+              </li>
+              <li>
+                <Link href="/wallet" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  💼 ওয়ালেট টপআপ
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  ❓ সাধারণ জিজ্ঞাসা (FAQ)
+                </Link>
+              </li>
+            </ul>
           </div>
 
+          {/* Legal */}
           <div>
-            <h4 style={{ color: "var(--text-primary)", fontSize: "0.95rem", marginBottom: "14px" }}>পেমেন্ট পার্টনার</h4>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "12px" }}>
-              বিকাশ, নগদ, রকেট, উপাই এবং ডেবিট/ক্রেডিট কার্ডের মাধ্যমে নিরাপদ লেনদেন।
-            </p>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              <span className="badge" style={{ background: "rgba(226, 19, 110, 0.15)", color: "#E2136E", border: "1px solid rgba(226,19,110,0.3)" }}>bKash</span>
-              <span className="badge" style={{ background: "rgba(247, 148, 29, 0.15)", color: "#F7941D", border: "1px solid rgba(247,148,29,0.3)" }}>Nagad</span>
-              <span className="badge" style={{ background: "rgba(140, 43, 137, 0.15)", color: "#8C2B89", border: "1px solid rgba(140,43,137,0.3)" }}>Rocket</span>
-              <span className="badge badge-cyan">Visa / Master</span>
+            <h4 style={{ color: "var(--text-primary)", fontSize: "1rem", marginBottom: "14px", fontWeight: 700 }}>
+              নীতিমালা ও শর্তাবলী
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+              <li>
+                <Link href="/terms" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  ব্যবহারের শর্তাবলী (Terms)
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  গোপনীয়তা নীতি (Privacy)
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund" style={{ color: "var(--text-secondary)", textDecoration: "none", fontSize: "0.875rem" }}>
+                  রিফান্ড ও রিটার্ন পলিসি
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 style={{ color: "var(--text-primary)", fontSize: "1rem", marginBottom: "14px", fontWeight: 700 }}>
+              যোগাযোগ ও সহায়তা
+            </h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+              <div>📞 হোয়াটসঅ্যাপ: +880 1812-345678</div>
+              <div>✉️ ইমেইল: support@topupcenter.com</div>
+              <div>⏰ সার্ভিস সময়: সকাল ৯:০০ — রাত ২:০০</div>
+              <div style={{ marginTop: "8px" }}>
+                <span className="badge badge-yellow">অটোমেটিক গেটওয়ে ২৪/৭ চালু</span>
+              </div>
             </div>
           </div>
         </div>
@@ -251,9 +340,9 @@ export default async function ShopLayout({
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: "10px",
-            color: "var(--text-muted)",
+            gap: "12px",
             fontSize: "0.8rem",
+            color: "var(--text-muted)",
           }}
         >
           <div>© {new Date().getFullYear()} Topup Center. সর্বস্বত্ব সংরক্ষিত।</div>

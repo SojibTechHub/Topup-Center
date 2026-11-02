@@ -7,8 +7,8 @@ import { approveManualTopup, rejectManualTopup } from "@/services/payment-servic
 const router = Router();
 
 // Protect all admin routes: STAFF, ADMIN, SUPER_ADMIN
-router.use(authenticateToken);
-router.use(requireRole("STAFF", "ADMIN", "SUPER_ADMIN"));
+router.use("/admin", authenticateToken);
+router.use("/admin", requireRole("STAFF", "ADMIN", "SUPER_ADMIN"));
 
 // ─────────────────────────────────────────────
 // 1. ORDERS QUEUE

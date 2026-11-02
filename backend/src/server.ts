@@ -1,3 +1,9 @@
+import "dotenv/config";
+import dns from "node:dns";
+
+// Optimize DNS lookup for fast API queries (avoids Windows IPv6 timeout)
+dns.setDefaultResultOrder("ipv4first");
+
 import { createApp } from "./app";
 import { env } from "./lib/env";
 

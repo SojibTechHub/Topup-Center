@@ -31,8 +31,8 @@ Rules:
     if (aiResponse && aiResponse.text) {
       return res.json({ success: true, reply: aiResponse.text });
     }
-  } catch (err) {
-    console.warn("AI generation failed, using intelligent fallback reply");
+  } catch (err: any) {
+    console.warn("AI generation failed, using intelligent fallback reply:", err?.message || err);
   }
 
   // Fallback intelligent responder

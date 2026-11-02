@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { z } from "zod";
 
 // Manual env validation without @t3-oss/env-nextjs
@@ -56,7 +57,7 @@ function getEnv() {
     GROK_API_KEY_2: process.env.GROK_API_KEY_2,
     GROK_API_KEY_3: process.env.GROK_API_KEY_3,
     GROK_API_KEY_4: process.env.GROK_API_KEY_4,
-    GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-3.5-flash-lite",
     GROK_MODEL: process.env.GROK_MODEL || "grok-4",
     AI_PRIMARY: (process.env.AI_PRIMARY || "gemini") as "gemini" | "grok",
 

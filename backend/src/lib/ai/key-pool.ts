@@ -153,6 +153,7 @@ export async function callAi(
         tokens: result.tokens,
       };
     } catch (error: any) {
+      console.error(`[AI Pool] Error on ${provider} key ${key.keyIndex}:`, error?.message || error);
       const latencyMs = Date.now() - startTime;
       const isRateLimit =
         error?.status === 429 || error?.message?.includes("rate");
@@ -191,17 +192,35 @@ async function callGemini(
   prompt: string,
   timeout: number
 ): Promise<{ text: string; tokens?: number }> {
-  const { GoogleGenerativeAI } = await import("@google/generative-ai");
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: env.GEMINI_MODEL });
-
+  const model = env.GEMINI_MODEL || "gemini-3.5-flash-lite";
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    const tokens = result.response.usageMetadata?.totalTokenCount;
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+        signal: controller.signal,
+      }
+    );
+
+    if (!res.ok) {
+      const errData = (await res.json().catch(() => ({}))) as any;
+      const error: any = new Error(
+        errData.error?.message || `Gemini API error ${res.status}`
+      );
+      error.status = res.status;
+      throw error;
+    }
+
+    const data = (await res.json()) as any;
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const tokens = data.usageMetadata?.totalTokenCount;
     return { text, tokens };
   } finally {
     clearTimeout(timer);
